@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-ling-gloss",
+	"name": "Interlinear Glossing",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "A plugin for interlinear glosses used in linguistics texts.",
+	"author": "Mijyuoon",
+	"authorUrl": "https://github.com/Mijyuoon",
+	"isDesktopOnly": false
+}
