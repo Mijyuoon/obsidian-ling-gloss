@@ -32,11 +32,11 @@
 /* Gloss element appearance */
 
 .ling-gloss-preamble {
-    font-style: italic;
+    font-weight: bold;
 }
 
 .ling-gloss-translation {
-    /* Nothing */
+    font-style: italic;
 }
 
 .ling-gloss-translation::before {
@@ -48,5 +48,11 @@
 }
 
 .ling-gloss-level-a {
-    font-weight: bold;
+    font-style: italic;
+}
+
+/* Language-specific style overrides */
+
+.ling-gloss-level-a.ling-style-cjk {
+    font-style: unset;
 }

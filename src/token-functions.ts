@@ -116,3 +116,13 @@ export const tokenizeLine = (line: string): Token[] => {
 
     return outTokens;
 }
+
+
+export const makeTokenError = (tokens: Token[]) => {
+    const maxlen = 20;
+
+    const text = tokens.slice(0, 2).map(t => t.text).join(" ");
+    if (text.length <= maxlen) return text;
+
+    return text.substring(0, maxlen).trim() + "…";
+}

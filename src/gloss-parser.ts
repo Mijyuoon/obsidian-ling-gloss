@@ -1,10 +1,33 @@
 import { ParserOptions } from 'src/models/parser-options';
-import { TokenType, Token } from 'src/models/token';
-import { CommandType, Command } from 'src/models/command';
-import { GlossData, initGlossData, initGlossElement } from 'src/models/gloss-data';
-import { gatherLines, tokenizeLine } from 'src/token-functions';
-import { iterateParser, makeTokenError, isComment, getCommand, getCombinedElement } from 'src/parse-functions';
+import { Token } from 'src/models/token';
+import { CommandType, Command, SetOptionType, SetOption } from 'src/models/command';
+import { GlossData, GlossElement, GlossOptions, GlossLineStyle, initGlossData, initGlossElement, initGlossLineStyle } from 'src/models/gloss-data';
+import { gatherLines, tokenizeLine, makeTokenError } from 'src/token-functions';
+import { iterateParser, isComment, getCommand, getCombinedElement, getSetOption } from 'src/parse-functions';
 
+
+type KeysOfType<O, T> = { [K in keyof O]: O[K] extends T ? K : never }[keyof O]
+type OptionalKeysOfType<O, T> = NonNullable<{ [K in keyof O]?: O[K] extends T | undefined ? K : never }[keyof O]>
+
+
+const GlossStrings: Partial<Record<CommandType, KeysOfType<GlossData, string>>> = {
+    [CommandType.ex]: "preamble",
+    [CommandType.ft]: "translation",
+}
+
+const GlossLevels: Partial<Record<CommandType, keyof GlossElement>> = {
+    [CommandType.gla]: "levelA",
+    [CommandType.glb]: "levelB",
+    [CommandType.glc]: "levelC",
+}
+
+const GlossLineStyles: Partial<Record<SetOptionType, OptionalKeysOfType<GlossOptions, GlossLineStyle>>> = {
+    [SetOptionType.exstyle]: "preamble",
+    [SetOptionType.ftstyle]: "translation",
+    [SetOptionType.glastyle]: "levelA",
+    [SetOptionType.glbstyle]: "levelB",
+    [SetOptionType.glcstyle]: "levelC",
+}
 
 export class GlossParser {
     private isNlevel: boolean;
@@ -39,44 +62,52 @@ export class GlossParser {
 
     private parseCommand({ text, type, params }: Command) {
         switch (type) {
-            case CommandType.Preamble:
-                this.parseStringField(params, str => ({ preamble: str }));
+            case CommandType.ex:
+            case CommandType.ft:
+                this.parseStringField(params, GlossStrings[type]!);
                 break;
 
-            case CommandType.Translation:
-                this.parseStringField(params, str => ({ translation: str }));
-                break;
-
-            case CommandType.LevelA:
+            case CommandType.gla:
+            case CommandType.glb:
+            case CommandType.glc:
                 if (this.isNlevel) throw `command “${text}” can't be used in nlevel mode`;
-                this.parseGlossElement(params, str => ({ levelA: str }));
+                this.parseGlossElement(params, GlossLevels[type]!);
                 break;
 
-            case CommandType.LevelB:
-                if (this.isNlevel) throw `command “${text}” can't be used in nlevel mode`;
-                this.parseGlossElement(params, str => ({ levelB: str }));
-                break;
-
-            case CommandType.LevelC:
-                if (this.isNlevel) throw `command “${text}” can't be used in nlevel mode`;
-                this.parseGlossElement(params, str => ({ levelC: str }));
-                break;
-
-            case CommandType.Combined:
+            case CommandType.gl:
                 if (!this.isNlevel) throw `command “${text}” can't be used in regular mode`;
                 this.parseCombinedElements(params);
+                break;
+
+            case CommandType.set:
+                this.parseOptionsList(params);
                 break;
 
             default: throw `command “${text}” is not known`;
         }
     }
 
-    private parseStringField(params: Token[], func: (str: string) => any) {
-        const string = params.map(t => t.text).join(" ");
-        Object.assign(this.glossData, func(string));
+    private parseSetOption({ text, type, values }: SetOption) {
+        switch (type) {
+            case SetOptionType.exstyle:
+            case SetOptionType.ftstyle:
+            case SetOptionType.glastyle:
+            case SetOptionType.glbstyle:
+            case SetOptionType.glcstyle:
+                this.parseLineStyleArrayField(values, GlossLineStyles[type]!, "classes");
+                break;
+
+            default: throw `option “${text}” is not known`;
+        }
     }
 
-    private parseGlossElement(params: Token[], func: (str: string) => any) {
+    private parseStringField(params: Token[], key: KeysOfType<GlossData, string>) {
+        if (params.length < 1) throw `no value provided for “${key}”`;
+
+        this.glossData[key] = params.map(t => t.text).join(" ");
+    }
+
+    private parseGlossElement(params: Token[], key: KeysOfType<GlossElement, string>) {
         const elements = this.glossData.elements;
 
         while (elements.length < params.length) {
@@ -84,7 +115,7 @@ export class GlossParser {
         }
 
         for (let ix = 0; ix < elements.length; ix += 1) {
-            Object.assign(elements[ix], func(params[ix]?.text ?? ""));
+            elements[ix][key] = params[ix]?.text ?? "";
         }
     }
 
@@ -95,4 +126,23 @@ export class GlossParser {
         const errTokens = iterateParser(params, getCombinedElement, elem => elements.push(elem));
         if (errTokens != null) throw `don't know how to parse ${makeTokenError(errTokens)}`;
     }
-};
+
+    private parseOptionsList(params: Token[]) {
+        const options: SetOption[] = [];
+
+        const errTokens = iterateParser(params, getSetOption, opt => options.push(opt));
+        if (errTokens != null) throw `don't know how to parse ${makeTokenError(errTokens)}`;
+
+        options.forEach(opt => this.parseSetOption(opt));
+    }
+
+    private parseLineStyleArrayField(values: string[], section: OptionalKeysOfType<GlossOptions, GlossLineStyle>, field: KeysOfType<GlossLineStyle, string[]>) {
+        if (values.length < 1) throw `no values provided for “${section}”`;
+
+        const invalid = values.find(x => !/^[a-z0-9-]+$/i.test(x));
+        if (invalid != null) throw `“${invalid}” isn't a valid style name`;
+
+        const option = this.glossData.options[section] ??= initGlossLineStyle();
+        option[field] = values;
+    }
+}

@@ -1,6 +1,6 @@
 import { Token, TokenType } from 'src/models/token';
-import { Command, CommandType } from 'src/models/command';
-import { GlossElement, initGlossElement } from 'src/models/gloss-data';
+import { Command, CommandType, SetOption, SetOptionType } from 'src/models/command';
+import { GlossElement } from 'src/models/gloss-data';
 
 
 export type ParserFunc<T> = (tokens: Token[]) => [T | null, Token[]];
@@ -19,32 +19,34 @@ export const iterateParser = <T>(tokens: Token[], parser: ParserFunc<T>, callbac
 }
 
 
-export const makeTokenError = (tokens: Token[]) => {
-    const maxlen = 20;
+const isSimple = (tokens: Token[], index = 0) =>
+    tokens[index]?.type === TokenType.Simple;
 
-    const text = tokens.slice(0, 2).map(t => t.text).join(" ");
-    if (text.length <= maxlen) return text;
+const gatherBracketed = (tokens: Token[], start = 1) => {
+    let index = start;
+    while (tokens[index]?.type === TokenType.Bracketed) {
+        index += 1;
+    }
 
-    return text.substring(0, maxlen).trim() + "…";
+    return tokens.slice(start, index);
 }
 
-
 export const isComment = (tokens: Token[]): boolean =>
-    tokens[0]?.text?.startsWith("#") ?? false;
-
+    isSimple(tokens) && tokens[0].text.startsWith("#");
 
 export const getCommand: ParserFunc<Command> = (tokens) => {
-    if (tokens[0]?.type !== TokenType.Simple) return [null, tokens];
+    if (!isSimple(tokens)) return [null, tokens];
 
-    const match = tokens[0]?.text?.match(/^\\(.+)$/);
+    const match = tokens[0].text.match(/^\\(.+)$/);
     if (match == null) return [null, tokens];
 
-    const cname = match[1].toLowerCase();
-    const ctype = Object.values(CommandType).find(x => x == cname);
+    const cmdText = match[1];
+    // @ts-ignore
+    const cmdType = CommandType[cmdText.toLowerCase()];
 
     const command: Command = {
-        text: match[1],
-        type: ctype ?? null,
+        text: cmdText,
+        type: cmdType ?? null,
         params: tokens.slice(1),
     };
 
@@ -52,22 +54,31 @@ export const getCommand: ParserFunc<Command> = (tokens) => {
 }
 
 export const getCombinedElement: ParserFunc<GlossElement> = (tokens) => {
-    if (tokens[0]?.type != TokenType.Simple) return [null, tokens];
+    if (!isSimple(tokens)) return [null, tokens];
 
-    const levels = [tokens[0]?.text];
-    if (levels[0] == null) return [null, tokens];
+    const levels = gatherBracketed(tokens).map(x => x.text);
 
-    let sliceAt = 1;
+    const element: GlossElement = {
+        levelA: tokens[0].text,
+        levelB: levels[0] ?? "",
+        levelC: levels[1] ?? "",
+    };
 
-    while (tokens[sliceAt]?.type == TokenType.Bracketed) {
-        levels.push(tokens[sliceAt].text);
-        sliceAt += 1;
-    }
+    return [element, tokens.slice(levels.length + 1)];
+}
 
-    const element = initGlossElement();
-    element.levelA = levels[0];
-    element.levelB = levels[1] ?? "";
-    element.levelC = levels[2] ?? "";
+export const getSetOption: ParserFunc<SetOption> = (tokens) => {
+    if (!isSimple(tokens)) return [null, tokens];
 
-    return [element, tokens.slice(sliceAt)];
+    const optText = tokens[0].text;
+    // @ts-ignore
+    const optType = SetOptionType[optText.toLowerCase()];
+
+    const option: SetOption = {
+        text: optText,
+        type: optType ?? null,
+        values: tokens.slice(1).map(x => x.text),
+    };
+
+    return [option, []];
 }
