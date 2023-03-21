@@ -195,3 +195,15 @@ These classes represent an element on a specific gloss line, where `*` is a sing
 ```
 
 ![Example 12](_examples/example12.png)
+
+
+# Installation
+
+## Manual installation
+
+- Create a folder called `obsidian-ling-gloss` anywhere
+- Go to the ["Releases"](https://github.com/Mijyuoon/obsidian-ling-gloss/releases) page and download `main.js`, `manifest.json` and `styles.css` files from the latest version
+- Copy the files you've downloaded into the folder you've created earlier
+- Open your vault's plugins folder at `<Vault Folder>/.obsidian/plugins` and put your folder there
+- Reload the plugins in Obsidian settings or restart the program
+- Enable the "Interlinear Glossing" plugin in Obsidian settings
