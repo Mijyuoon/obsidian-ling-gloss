@@ -1,5 +1,5 @@
 {
-	"name": "obsidian-ling-gloss",
+	"name": "ling-gloss",
 	"version": "1.1.0",
 	"description": "A plugin for interlinear glosses used in linguistics texts.",
 	"main": "main.js",
