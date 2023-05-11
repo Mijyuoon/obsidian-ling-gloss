@@ -6,8 +6,8 @@ import { gatherLines, tokenizeLine, makeTokenError } from 'src/token-functions';
 import { iterateParser, isComment, getCommand, getCombinedElement, getSetOption } from 'src/parse-functions';
 
 
-type KeysOfType<O, T> = { [K in keyof O]: O[K] extends T ? K : never }[keyof O]
-type OptionalKeysOfType<O, T> = NonNullable<{ [K in keyof O]?: O[K] extends T | undefined ? K : never }[keyof O]>
+type KeysOfType<O, T> = { [K in keyof O]: O[K] extends T ? K : never }[keyof O];
+type OptionalKeysOfType<O, T> = NonNullable<{ [K in keyof O]?: O[K] extends T | undefined ? K : never }[keyof O]>;
 
 
 const GlossStrings: Partial<Record<CommandType, KeysOfType<GlossData, string>>> = {
@@ -27,6 +27,8 @@ const GlossLineStyles: Partial<Record<SetOptionType, OptionalKeysOfType<GlossOpt
     [SetOptionType.glastyle]: "levelA",
     [SetOptionType.glbstyle]: "levelB",
     [SetOptionType.glcstyle]: "levelC",
+
+    [SetOptionType.glaspaces]: "levelA",
 }
 
 export class GlossParser {
@@ -94,7 +96,11 @@ export class GlossParser {
             case SetOptionType.glastyle:
             case SetOptionType.glbstyle:
             case SetOptionType.glcstyle:
-                this.parseLineStyleArrayField(values, GlossLineStyles[type]!, "classes");
+                this.parseLineStyleClassesField(values, GlossLineStyles[type]!);
+                break;
+
+            case SetOptionType.glaspaces:
+                this.setLineStyleValue<boolean>(true, GlossLineStyles[type]!, "altSpaces");
                 break;
 
             default: throw `option “${text}” is not known`;
@@ -136,13 +142,17 @@ export class GlossParser {
         options.forEach(opt => this.parseSetOption(opt));
     }
 
-    private parseLineStyleArrayField(values: string[], section: OptionalKeysOfType<GlossOptions, GlossLineStyle>, field: KeysOfType<GlossLineStyle, string[]>) {
+    private parseLineStyleClassesField(values: string[], section: OptionalKeysOfType<GlossOptions, GlossLineStyle>) {
         if (values.length < 1) throw `no values provided for “${section}”`;
 
         const invalid = values.find(x => !/^[a-z0-9-]+$/i.test(x));
         if (invalid != null) throw `“${invalid}” isn't a valid style name`;
 
+        this.setLineStyleValue<string[]>(values, section, "classes");
+    }
+
+    private setLineStyleValue<T>(value: T, section: OptionalKeysOfType<GlossOptions, GlossLineStyle>, field: KeysOfType<GlossLineStyle, T>) {
         const option = this.glossData.options[section] ??= initGlossLineStyle();
-        option[field] = values;
+        (option[field] as unknown as T) = value;
     }
 }

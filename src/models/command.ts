@@ -11,11 +11,15 @@ export enum CommandType {
 }
 
 export enum SetOptionType {
+    // Syle classes for gloss elements
     exstyle,
     ftstyle,
     glastyle,
     glbstyle,
     glcstyle,
+
+    // Replace underscores with spaces in A-line
+    glaspaces,
 }
 
 export interface Command {

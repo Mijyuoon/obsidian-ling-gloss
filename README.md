@@ -19,6 +19,8 @@ Lines starting with `#` are consired as comments and are ignored by the parser. 
 
 A basic gloss consists of two lines, the source language text and the metalanguage. This can be achieved using `\gla` (gloss level A) and `\glb` (gloss level B) commands. These commands take space-separated lists of elements (words or morphemes), which will be aligned vertically element-by-element. By default level A lines have an italics style applied, while level B lines have no default style.
 
+Additionally, if there's a need to use whitespace within a single gloss element, it can be wrapped in square brackets `[like this]`.
+
 ```gloss
 \gla Péter-nek van egy macská-ja
 \glb Peter-DAT exist INDEF cat-POSS.3SG
@@ -122,7 +124,7 @@ In this mode, commands for individual gloss lines (`\gla`, `\glb`, `\glc`) are r
 
 ![Example 06](_examples/example06.png)
 
-While it is generally cleaner to write each element on its own line, as in the example above, it is not strictly necessary and all tokens can be placed on the line following the `\gl` command for the same result. Additionally, spaces between bracketed `[tokens]` are not required, unlike between bare tokens.
+While it is generally cleaner to write each element on its own line, as in the example above, it is not strictly necessary and all tokens can be placed on the line following the `\gl` command for the same result. Additionally, spaces between bracketed `[tokens]` are not required, unlike between bare tokens. (Spaces within `[tokens]` work the same way as in the other syntax.)
 
 The following example produces the same result as the one above, although the readability is generally worse:
 
@@ -196,6 +198,75 @@ These classes represent an element on a specific gloss line, where `*` is a sing
 
 ![Example 12](_examples/example12.png)
 
+## Setting Options (`\set`)
+
+There are some options that can be changed for an individual gloss block using the `\set` command, which takes an option name and, depending on the command:
+
+- No values (for binary switch options)
+- A single value (multiple spaces between value tokens are collapsed into a single one)
+- A list of values (bracketed `[tokens]` can be used for values with spaces in them)
+
+Below is the list of available options with examples.
+
+### `glaspaces`
+
+This option enables using underscore characters for whitespace in level A elements. It's particularly useful for `ngloss` syntax as bracketed tokens that support whitespace can't be used in level A. This option takes no values.
+
+```
+\set glaspaces
+\gl nǐ_hǎo [hello]
+    shì_jiè [world]
+```
+
+![Example 13](_examples/example13.png)
+
+### `gl*style`, `exstyle`, `ftstyle`
+
+These options assign custom CSS classes to various parts of a rendered gloss to allow for selective customization of individual glosses. All these options accept a list of CSS class names as values. Each command targets a specific part of a gloss as follows:
+
+- `gl*style` – Targets an element on a specific gloss line, where `*` is a single lowercase letter between `a` and `c` that corresponds to the level of that line.
+- `exstyle` – Targets the unmodified source text (preamble) line.
+- `ftstyle` – targets the free translation line.
+
+For each provided class name, a CSS class called `.ling-style-*` is assigned to the target, where `*` is the provided class name.
+
+
+For example, assuming these styles defined in a CSS snippet:
+```css
+.ling-style-big { font-size: 1.5em; }
+.ling-style-solid { border: solid 2px red; }
+.ling-style-dashed { border: dashed 2px yellowgreen; }
+```
+
+The following gloss should be displayed as shown here:
+
+```
+\set glastyle big solid
+\set ftstyle dashed
+\gl János [ja:noʃ] [John:NOM]
+    tegnap [tɛgnɒp] [yesterday]
+    elvi-tt [ɛlvit:] [take-PST]
+    két [ke:t] [two]
+    könyv-et [køɲvɛt] [book-ACC]
+    Péter-nek [pe:tɛrnɛk] [Peter-DAT]
+\ft John took two books to Peter yesterday.
+```
+
+![Example 14](_examples/example14.png)
+
+By default, the plugin defines a style called `cjk` for the `glastyle` option that removes the default italics styling. This is meant to be used with CJK characters which do not normally use italics:
+
+```
+\set glastyle cjk
+\gl 你好 [nǐhǎo] [hello]
+	世界 [shìjiè] [world]
+```
+
+![Example 15a](_examples/example15a.png)
+
+And the same gloss with the `\set` line removed:
+
+![Example 15b](_examples/example15b.png)
 
 # Installation
 

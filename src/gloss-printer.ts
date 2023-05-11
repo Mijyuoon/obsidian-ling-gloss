@@ -1,11 +1,21 @@
 import { GlossData, GlossLineStyle } from 'src/models/gloss-data';
 
 
-const textOrNbsp = (text: string) =>
-    text.length > 0 ? text : "\u00A0";
+const AlternateSpaceChars = /[_]+/g;
 
-const styleClasses = (style: GlossLineStyle | undefined) =>
+const textOrNbsp = (text: string, style?: GlossLineStyle) => {
+    if (text.length < 1) return "\u00A0";
+
+    if (style?.altSpaces) {
+        text = text.replace(AlternateSpaceChars, "\u00A0");
+    }
+
+    return text.replace(/\s+/g, "\u00A0");
+}
+
+const styleClasses = (style?: GlossLineStyle) =>
     style?.classes.filter(x => x.length > 0).map(x => `ling-style-${x}`) ?? [];
+
 
 export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
     const container = dest.createDiv({ cls: "ling-gloss" });
@@ -26,7 +36,7 @@ export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
             const element = elements.createDiv({ cls: "ling-gloss-element" });
 
             const levelA = element.createDiv({ cls: "ling-gloss-level-a" });
-            levelA.innerText = textOrNbsp(glelem.levelA);
+            levelA.innerText = textOrNbsp(glelem.levelA, gloss.options.levelA);
             levelA.addClasses(styleClasses(gloss.options.levelA));
 
             if (hasLevelB) {
