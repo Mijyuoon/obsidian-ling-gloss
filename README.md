@@ -19,14 +19,21 @@ Lines starting with `#` are consired as comments and are ignored by the parser. 
 
 A basic gloss consists of two lines, the source language text and the metalanguage. This can be achieved using `\gla` (gloss level A) and `\glb` (gloss level B) commands. These commands take space-separated lists of elements (words or morphemes), which will be aligned vertically element-by-element. By default level A lines have an italics style applied, while level B lines have no default style.
 
-Additionally, if there's a need to use whitespace within a single gloss element, it can be wrapped in square brackets `[like this]`.
-
 ```gloss
 \gla Péter-nek van egy macská-ja
 \glb Peter-DAT exist INDEF cat-POSS.3SG
 ```
 
-![Example 01](_examples/example01.png)
+![Example 01a](_examples/example01a.png)
+
+Additionally, if there's a need to use whitespace within a single gloss element, it can be wrapped in square brackets `[like this]`. To use the brackets verbatim in a gloss element, you can "escape" them by prefixing with a caret symbol like `^[this^]`. Empty square brackets `[]` can be used to write a blank element in a gloss.
+
+```
+\gla János tegnap [vi-tt el] két könyv-et Péter-nek
+\glb John^[TOP^] yesterday^[FOC^] [take-PST away] two book-ACC Peter-DAT
+```
+
+![Example 01b](_examples/example01b.png)
 
 ## Additional gloss line (`\glc`)
 

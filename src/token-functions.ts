@@ -41,13 +41,6 @@ export const gatherLines = (input: string): string[] => {
 }
 
 
-const replaceSpecial = (token: string) => {
-    switch (token) {
-        case "//": return "";
-        default: return token;
-    }
-}
-
 export const tokenizeLine = (line: string): Token[] => {
     const outTokens: Token[] = [];
     const tokenBuf: string[] = [];
@@ -58,9 +51,31 @@ export const tokenizeLine = (line: string): Token[] => {
             .join(" ");
 
     let isBracket = false;
+    let isEscape = false;
 
     for (const char of line.trim()) {
-        if (isBracket) {
+        if (char === '^' && !isEscape) {
+            isEscape = true;
+            continue;
+        }
+
+        if (isEscape) {
+            switch (char) {
+                case '[':
+                case ']':
+                case '^':
+                    tokenBuf.push(char);
+                    isEscape = false;
+                    break;
+
+                default:
+                    // Print the escape character verbatim for stuff that doesn't need escaping
+                    tokenBuf.push('^');
+                    tokenBuf.push(char);
+                    isEscape = false;
+                    break;
+            }
+        } else if (isBracket) {
             switch (char) {
                 case '[':
                     throw `invalid “[” found around “${makeErrorPos()}”`;
@@ -90,7 +105,7 @@ export const tokenizeLine = (line: string): Token[] => {
                     if (tokenBuf.length > 0) {
                         outTokens.push({
                             type: TokenType.Simple,
-                            text: replaceSpecial(tokenBuf.join("")),
+                            text: tokenBuf.join(""),
                         });
                     }
 
@@ -110,7 +125,7 @@ export const tokenizeLine = (line: string): Token[] => {
     if (tokenBuf.length > 0) {
         outTokens.push({
             type: TokenType.Simple,
-            text: replaceSpecial(tokenBuf.join("")),
+            text: tokenBuf.join(""),
         });
     }
 
