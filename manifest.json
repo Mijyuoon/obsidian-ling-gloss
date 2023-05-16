@@ -1,9 +1,9 @@
 {
 	"id": "ling-gloss",
 	"name": "Interlinear Glossing",
-	"version": "1.1.1",
+	"version": "1.2.0",
 	"minAppVersion": "0.15.0",
-	"description": "A plugin for interlinear glosses used in linguistics texts.",
+	"description": "Format interlinear glosses used in linguistics texts.",
 	"author": "Mijyuoon",
 	"authorUrl": "https://github.com/Mijyuoon",
 	"isDesktopOnly": false
