@@ -26,9 +26,9 @@ A basic gloss consists of two lines, the source language text and the metalangua
 
 ![Example 01a](_examples/example01a.png)
 
-Additionally, if there's a need to use whitespace within a single gloss element, it can be wrapped in square brackets `[like this]`. To use the brackets verbatim in a gloss element, you can "escape" them by prefixing with a caret symbol like `^[this^]`. Empty square brackets `[]` can be used to write a blank element in a gloss.
+Additionally, if there's a need to use whitespace within a single gloss element, it can be wrapped in square brackets `[like this]`. To use the brackets verbatim in a gloss element, they can be "escaped" by prefixing with a caret symbol like `^[this^]`. Empty square brackets `[]` can be used to write a blank element in a gloss.
 
-```
+```gloss
 \gla János tegnap [vi-tt el] két könyv-et Péter-nek
 \glb John^[TOP^] yesterday^[FOC^] [take-PST away] two book-ACC Peter-DAT
 ```
@@ -118,7 +118,7 @@ In this mode, commands for individual gloss lines (`\gla`, `\glb`, `\glc`) are r
 - A regular bare `token` is always treated as a new level A (1st line) element
 - A `[token]` surrounded in square brackets that follows a regular `token` is a level B (2nd line) element, that corresponds to the last level A element
 - Any additional bracketed `[token]`s add further lines to the last level A element
-  *(Note: currently only one extra line, level C, will be shown)*
+	- Note that this mechanism allows for adding more than 3 gloss lines, as shown below
 
 ```ngloss
 \gl János [ja:noʃ] [John:NOM]
@@ -129,7 +129,22 @@ In this mode, commands for individual gloss lines (`\gla`, `\glb`, `\glc`) are r
 	Péter-nek [pe:tɛrnɛk] [Peter-DAT]
 ```
 
-![Example 06](_examples/example06.png)
+![Example 06a](_examples/example06a.png)
+
+```ngloss
+\set glastyle cjk
+\ex 牆上掛著一幅畫 / 墙上挂着一幅画
+\gl 牆 [墙] [qiáng] [wall] [^[TOP]
+	上 [上] [shàng] [on] [^]]
+	掛 [挂] [guà] [hang] [V]
+	著 [着] [zhe] [CONT] [ASP]
+	一 [一] [yì] [one] [^[S]
+	幅 [幅] [fú] [picture.CL] []
+	畫 [画] [huà] [picture] [^]]
+\ft A picture is hanging on the wall.
+```
+
+![Example 06b](_examples/example06b.png)
 
 While it is generally cleaner to write each element on its own line, as in the example above, it is not strictly necessary and all tokens can be placed on the line following the `\gl` command for the same result. Additionally, spaces between bracketed `[tokens]` are not required, unlike between bare tokens. (Spaces within `[tokens]` work the same way as in the other syntax.)
 
@@ -195,7 +210,7 @@ This class represents a single group of vertically aligned gloss elements.
 
 ### `.ling-gloss-level-*`
 
-These classes represent an element on a specific gloss line, where `*` is a single lowercase letter between `a` and `c` that corresponds to the level of that line.
+These classes represent an element on a specific gloss line, where `*` is one of the lowercase letters `a`, `b`, `c` or `x`, that corresponds to the level of that line.
 
 ```css
 .ling-gloss-level-a { border: dotted 2px red; }
@@ -203,7 +218,29 @@ These classes represent an element on a specific gloss line, where `*` is a sing
 .ling-gloss-level-c { border: solid 2px blueviolet; }
 ```
 
-![Example 12](_examples/example12.png)
+![Example 12a](_examples/example12a.png)
+
+Note that the `level-x` style applies to *all* lines after the level C line, however, the CSS sibling selector `:nth-child(n)` can be used to target a specific line. The `n` count for level X lines starts from 4, since the first three lines are the levels A, B and C.
+
+```css
+.ling-gloss-level-x { border: solid 2px red; }
+.ling-gloss-level-x:nth-child(5) { font-size: 1.5em; }
+```
+
+```ngloss
+\set glastyle cjk
+\ex 牆上掛著一幅畫 / 墙上挂着一幅画
+\gl 牆 [墙] [qiáng] [wall] [^[TOP]
+	上 [上] [shàng] [on] [^]]
+	掛 [挂] [guà] [hang] [V]
+	著 [着] [zhe] [CONT] [ASP]
+	一 [一] [yì] [one] [^[S]
+	幅 [幅] [fú] [picture.CL] []
+	畫 [画] [huà] [picture] [^]]
+\ft A picture is hanging on the wall.
+```
+
+![Example 12b](_examples/example12b.png)
 
 ## Setting Options (`\set`)
 
@@ -219,7 +256,7 @@ Below is the list of available options with examples.
 
 This option enables using underscore characters for whitespace in level A elements. It's particularly useful for `ngloss` syntax as bracketed tokens that support whitespace can't be used in level A. This option takes no values.
 
-```
+```ngloss
 \set glaspaces
 \gl nǐ_hǎo [hello]
     shì_jiè [world]
@@ -231,12 +268,12 @@ This option enables using underscore characters for whitespace in level A elemen
 
 These options assign custom CSS classes to various parts of a rendered gloss to allow for selective customization of individual glosses. All these options accept a list of CSS class names as values. Each command targets a specific part of a gloss as follows:
 
-- `gl*style` – Targets an element on a specific gloss line, where `*` is a single lowercase letter between `a` and `c` that corresponds to the level of that line.
+- `gl*style` – Targets an element on a specific gloss line, where `*` is one of the lowercase letters `a`, `b`, `c` or `x`, that corresponds to the level of that line.
+	- Note that `glxstyle` applies to *all* lines after the level C line. See [`.ling-gloss-level-*`](#ling-gloss-level) for details.
 - `exstyle` – Targets the unmodified source text (preamble) line.
 - `ftstyle` – targets the free translation line.
 
 For each provided class name, a CSS class called `.ling-style-*` is assigned to the target, where `*` is the provided class name.
-
 
 For example, assuming these styles defined in a CSS snippet:
 ```css
@@ -247,7 +284,7 @@ For example, assuming these styles defined in a CSS snippet:
 
 The following gloss should be displayed as shown here:
 
-```
+```ngloss
 \set glastyle big solid
 \set ftstyle dashed
 \gl János [ja:noʃ] [John:NOM]
@@ -263,7 +300,7 @@ The following gloss should be displayed as shown here:
 
 By default, the plugin defines a style called `cjk` for the `glastyle` option that removes the default italics styling. This is meant to be used with CJK characters which do not normally use italics:
 
-```
+```ngloss
 \set glastyle cjk
 \gl 你好 [nǐhǎo] [hello]
 	世界 [shìjiè] [world]

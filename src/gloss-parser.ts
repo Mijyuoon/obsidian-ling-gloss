@@ -15,7 +15,7 @@ const GlossStrings: Partial<Record<CommandType, KeysOfType<GlossData, string>>> 
     [CommandType.ft]: "translation",
 }
 
-const GlossLevels: Partial<Record<CommandType, keyof GlossElement>> = {
+const GlossLevels: Partial<Record<CommandType, KeysOfType<GlossElement, string>>> = {
     [CommandType.gla]: "levelA",
     [CommandType.glb]: "levelB",
     [CommandType.glc]: "levelC",
@@ -27,6 +27,7 @@ const GlossLineStyles: Partial<Record<SetOptionType, OptionalKeysOfType<GlossOpt
     [SetOptionType.glastyle]: "levelA",
     [SetOptionType.glbstyle]: "levelB",
     [SetOptionType.glcstyle]: "levelC",
+    [SetOptionType.glxstyle]: "nlevels",
 
     [SetOptionType.glaspaces]: "levelA",
 }
@@ -96,6 +97,7 @@ export class GlossParser {
             case SetOptionType.glastyle:
             case SetOptionType.glbstyle:
             case SetOptionType.glcstyle:
+            case SetOptionType.glxstyle:
                 this.parseLineStyleClassesField(values, GlossLineStyles[type]!);
                 break;
 

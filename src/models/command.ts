@@ -17,6 +17,7 @@ export enum SetOptionType {
     glastyle,
     glbstyle,
     glcstyle,
+    glxstyle,
 
     // Replace underscores with spaces in A-line
     glaspaces,

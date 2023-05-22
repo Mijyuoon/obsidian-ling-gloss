@@ -62,6 +62,7 @@ export const getCombinedElement: ParserFunc<GlossElement> = (tokens) => {
         levelA: tokens[0].text,
         levelB: levels[0] ?? "",
         levelC: levels[1] ?? "",
+        nlevels: levels.slice(2),
     };
 
     return [element, tokens.slice(levels.length + 1)];

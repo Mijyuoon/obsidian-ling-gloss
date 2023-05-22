@@ -1,13 +1,11 @@
 import { GlossData, GlossLineStyle } from 'src/models/gloss-data';
 
 
-const AlternateSpaceChars = /[_]+/g;
-
 const textOrNbsp = (text: string, style?: GlossLineStyle) => {
     if (text.length < 1) return "\u00A0";
 
     if (style?.altSpaces) {
-        text = text.replace(AlternateSpaceChars, "\u00A0");
+        text = text.replace(/[_]+/g, "\u00A0");
     }
 
     return text.replace(/\s+/g, "\u00A0");
@@ -31,6 +29,7 @@ export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
 
         const hasLevelB = gloss.elements.some(el => el.levelB?.length > 0);
         const hasLevelC = gloss.elements.some(el => el.levelC?.length > 0);
+        const maxNlevel = gloss.elements.reduce((acc, el) => Math.max(acc, el.nlevels.length), 0);
 
         for (const glelem of gloss.elements) {
             const element = elements.createDiv({ cls: "ling-gloss-element" });
@@ -49,6 +48,12 @@ export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
                 const levelC = element.createDiv({ cls: "ling-gloss-level-c" });
                 levelC.innerText = textOrNbsp(glelem.levelC);
                 levelC.addClasses(styleClasses(gloss.options.levelC));
+            }
+
+            for (let index = 0; index < maxNlevel; index += 1) {
+                const levelX = element.createDiv({ cls: "ling-gloss-level-x" });
+                levelX.innerText = textOrNbsp(glelem.nlevels[index] ?? "");
+                levelX.addClasses(styleClasses(gloss.options.nlevels));
             }
         }
     }

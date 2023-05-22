@@ -9,12 +9,14 @@ export interface GlossOptions {
     levelA?: GlossLineStyle;
     levelB?: GlossLineStyle;
     levelC?: GlossLineStyle;
+    nlevels?: GlossLineStyle;
 }
 
 export interface GlossElement {
     levelA: string;
     levelB: string;
     levelC: string;
+    nlevels: string[];
 }
 
 export interface GlossData {
@@ -29,6 +31,7 @@ export const initGlossElement = (): GlossElement => ({
     levelA: "",
     levelB: "",
     levelC: "",
+    nlevels: [],
 })
 
 export const initGlossLineStyle = (): GlossLineStyle => ({
