@@ -314,7 +314,11 @@ And the same gloss with the `\set` line removed:
 
 # Installation
 
-## Manual installation
+## Obsidian plugin repository
+
+You can now install this plugin from the official community plugin repository by going to *Settings → Community plugins → Browse* in Obsidian and searching for “Interlinear Glossing”.
+
+## Manual installation (deprecated)
 
 - Create a folder called `ling-gloss` anywhere
 - Go to the ["Releases"](https://github.com/Mijyuoon/obsidian-ling-gloss/releases) page and download `main.js`, `manifest.json` and `styles.css` files from the latest version
