@@ -17,6 +17,7 @@ const styleClasses = (style?: GlossLineStyle) =>
 
 export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
     const container = dest.createDiv({ cls: "ling-gloss" });
+    container.addClasses(styleClasses(gloss.options.global));
 
     if (gloss.preamble?.length > 0) {
         const preamble = container.createDiv({ cls: "ling-gloss-preamble" });

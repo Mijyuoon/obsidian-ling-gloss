@@ -22,6 +22,7 @@ const GlossLevels: Partial<Record<CommandType, KeysOfType<GlossElement, string>>
 }
 
 const GlossLineStyles: Partial<Record<SetOptionType, OptionalKeysOfType<GlossOptions, GlossLineStyle>>> = {
+    [SetOptionType.style]: "global",
     [SetOptionType.exstyle]: "preamble",
     [SetOptionType.ftstyle]: "translation",
     [SetOptionType.glastyle]: "levelA",
@@ -92,6 +93,7 @@ export class GlossParser {
 
     private parseSetOption({ text, type, values }: SetOption) {
         switch (type) {
+            case SetOptionType.style:
             case SetOptionType.exstyle:
             case SetOptionType.ftstyle:
             case SetOptionType.glastyle:
@@ -153,7 +155,7 @@ export class GlossParser {
         this.setLineStyleValue<string[]>(values, section, "classes");
     }
 
-    private setLineStyleValue<T>(value: T, section: OptionalKeysOfType<GlossOptions, GlossLineStyle>, field: KeysOfType<GlossLineStyle, T>) {
+    private setLineStyleValue<T>(value: T, section: OptionalKeysOfType<GlossOptions, GlossLineStyle>, field: OptionalKeysOfType<GlossLineStyle, T>) {
         const option = this.glossData.options[section] ??= initGlossLineStyle();
         (option[field] as unknown as T) = value;
     }

@@ -1,9 +1,10 @@
 export interface GlossLineStyle {
     classes: string[];
-    altSpaces: boolean,
+    altSpaces?: boolean,
 }
 
 export interface GlossOptions {
+    global?: GlossLineStyle;
     preamble?: GlossLineStyle;
     translation?: GlossLineStyle;
     levelA?: GlossLineStyle;
@@ -36,7 +37,6 @@ export const initGlossElement = (): GlossElement => ({
 
 export const initGlossLineStyle = (): GlossLineStyle => ({
     classes: [],
-    altSpaces: false,
 })
 
 export const initGlossData = (): GlossData => ({

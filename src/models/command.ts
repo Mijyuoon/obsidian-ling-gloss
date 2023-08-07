@@ -12,6 +12,7 @@ export enum CommandType {
 
 export enum SetOptionType {
     // Syle classes for gloss elements
+    style,
     exstyle,
     ftstyle,
     glastyle,
