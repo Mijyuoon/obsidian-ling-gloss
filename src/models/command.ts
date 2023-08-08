@@ -1,12 +1,21 @@
 import { Token } from 'src/models/token';
 
 export enum CommandType {
+    // Preamble
     ex,
+    // Free translation
     ft,
+    // Gloss line level A
     gla,
+    // Gloss line level B
     glb,
+    // Gloss line level C
     glc,
+    // N-level gloss elements
     gl,
+    // Number or other label
+    num,
+    // Miscelaneous options
     set,
 }
 

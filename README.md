@@ -101,6 +101,24 @@ If a command line feels too long, it may be broken into multiple lines by indent
 
 ![Example 05](_examples/example05.png)
 
+## Numbering (`\num`)
+
+A gloss can be numbered using the `\num` command for the purpose of referencing it from the rest of the document. Currently, this command takes a line of text that is directly used as the label for the gloss. This may be replaced with an auto-numbering system in the future.
+
+```
+\num 1
+\gla Péter-nek van egy macská-ja
+\glb Peter-DAT exist INDEF cat-POSS.3SG
+```
+
+```
+\num 2
+\gla [nǐ hǎo] [shì jiè]
+\glb hello world
+```
+
+![Example 16](_examples/example16.png)
+
 ## Alternative syntax (`\gl`)
 
 An alternative syntax for gloss lines is available, where source language elements are adjacent to their glosses in the markup. This has an advantage of making the markup easier to read and write, especially for longer glosses.
@@ -158,12 +176,12 @@ The following example produces the same result as the one above, although the re
 
 All parts of a rendered gloss block have CSS classes assigned, so their appearance can be customized using [CSS snippets](https://help.obsidian.md/Extending+Obsidian/CSS+snippets). Below is the list of available CSS classes with examples.
 
-### `.ling-gloss`
+### `.ling-gloss-body`
 
-This class represents the gloss block as a whole.
+This class represents the contents of a gloss block as a whole.
 
 ```css
-.ling-gloss { border: solid 2px red; }
+.ling-gloss-body { border: solid 2px red; }
 ```
 
 ![Example 07](_examples/example07.png)
@@ -264,10 +282,11 @@ This option enables using underscore characters for whitespace in level A elemen
 
 ![Example 13](_examples/example13.png)
 
-### `gl*style`, `exstyle`, `ftstyle`
+### `style`, `gl*style`, `exstyle`, `ftstyle`
 
 These options assign custom CSS classes to various parts of a rendered gloss to allow for selective customization of individual glosses. All these options accept a list of CSS class names as values. Each command targets a specific part of a gloss as follows:
 
+- `style` – Targets the the gloss contents as a whole. Useful for styles that target multiple parts of a gloss at once.
 - `gl*style` – Targets an element on a specific gloss line, where `*` is one of the lowercase letters `a`, `b`, `c` or `x`, that corresponds to the level of that line.
 	- Note that `glxstyle` applies to *all* lines after the level C line. See [`.ling-gloss-level-*`](#ling-gloss-level) for details.
 - `exstyle` – Targets the unmodified source text (preamble) line.

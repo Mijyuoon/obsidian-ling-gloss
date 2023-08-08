@@ -1,6 +1,9 @@
 import { GlossData, GlossLineStyle } from 'src/models/gloss-data';
 
 
+const withNbsp = (text: string) =>
+    text.replace(/\s+/g, "\u00A0");
+
 const textOrNbsp = (text: string, style?: GlossLineStyle) => {
     if (text.length < 1) return "\u00A0";
 
@@ -8,25 +11,29 @@ const textOrNbsp = (text: string, style?: GlossLineStyle) => {
         text = text.replace(/[_]+/g, "\u00A0");
     }
 
-    return text.replace(/\s+/g, "\u00A0");
+    return withNbsp(text);
 }
 
 const styleClasses = (style?: GlossLineStyle) =>
     style?.classes.filter(x => x.length > 0).map(x => `ling-style-${x}`) ?? [];
 
-
 export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
     const container = dest.createDiv({ cls: "ling-gloss" });
-    container.addClasses(styleClasses(gloss.options.global));
+
+    const label = container.createDiv({ cls: "ling-gloss-label" });
+    label.innerText = withNbsp(gloss.label);
+
+    const body = container.createDiv({ cls: "ling-gloss-body" });
+    body.addClasses(styleClasses(gloss.options.global));
 
     if (gloss.preamble?.length > 0) {
-        const preamble = container.createDiv({ cls: "ling-gloss-preamble" });
+        const preamble = body.createDiv({ cls: "ling-gloss-preamble" });
         preamble.innerText = gloss.preamble;
         preamble.addClasses(styleClasses(gloss.options.preamble));
     }
 
     if (gloss.elements.length > 0) {
-        const elements = container.createDiv({ cls: "ling-gloss-elements" });
+        const elements = body.createDiv({ cls: "ling-gloss-elements" });
 
         const hasLevelB = gloss.elements.some(el => el.levelB?.length > 0);
         const hasLevelC = gloss.elements.some(el => el.levelC?.length > 0);
@@ -60,12 +67,12 @@ export const glossPrinter = (gloss: GlossData, dest: HTMLElement) => {
     }
 
     if (gloss.translation?.length > 0) {
-        const translation = container.createDiv({ cls: "ling-gloss-translation" });
+        const translation = body.createDiv({ cls: "ling-gloss-translation" });
         translation.innerText = gloss.translation;
         translation.addClasses(styleClasses(gloss.options.translation));
     }
 
-    if (!container.hasChildNodes()) {
+    if (!body.hasChildNodes()) {
         errorPrinter([ "the gloss is empty, there's nothing to display" ], dest);
     }
 }

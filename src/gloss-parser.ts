@@ -13,6 +13,7 @@ type OptionalKeysOfType<O, T> = NonNullable<{ [K in keyof O]?: O[K] extends T | 
 const GlossStrings: Partial<Record<CommandType, KeysOfType<GlossData, string>>> = {
     [CommandType.ex]: "preamble",
     [CommandType.ft]: "translation",
+    [CommandType.num]: "label",
 }
 
 const GlossLevels: Partial<Record<CommandType, KeysOfType<GlossElement, string>>> = {
@@ -68,6 +69,7 @@ export class GlossParser {
         switch (type) {
             case CommandType.ex:
             case CommandType.ft:
+            case CommandType.num:
                 this.parseStringField(params, GlossStrings[type]!);
                 break;
 
@@ -100,7 +102,7 @@ export class GlossParser {
             case SetOptionType.glbstyle:
             case SetOptionType.glcstyle:
             case SetOptionType.glxstyle:
-                this.parseLineStyleClassesField(values, GlossLineStyles[type]!);
+                this.setLineStyleClasses(values, GlossLineStyles[type]!);
                 break;
 
             case SetOptionType.glaspaces:
@@ -146,7 +148,7 @@ export class GlossParser {
         options.forEach(opt => this.parseSetOption(opt));
     }
 
-    private parseLineStyleClassesField(values: string[], section: OptionalKeysOfType<GlossOptions, GlossLineStyle>) {
+    private setLineStyleClasses(values: string[], section: OptionalKeysOfType<GlossOptions, GlossLineStyle>) {
         if (values.length < 1) throw `no values provided for “${section}”`;
 
         const invalid = values.find(x => !/^[a-z0-9-]+$/i.test(x));

@@ -14,12 +14,17 @@
 /* Gloss element layout */
 
 .ling-gloss {
-    margin-inline-start: 2em;
+    display: flex;
     margin-block-start: 1em;
     margin-block-end: 1em;
 }
 
-.ling-gloss > div:not(:last-child) {
+.ling-gloss-label {
+    min-width: 1em;
+    padding-inline-end: 1em;
+}
+
+.ling-gloss-body > div:not(:last-child) {
     margin-bottom: 0.5em;
 }
 
@@ -30,6 +35,18 @@
 }
 
 /* Gloss element appearance */
+
+.ling-gloss-label::before {
+    content: "(";
+}
+
+.ling-gloss-label::after {
+    content: ")";
+}
+
+.ling-gloss-label:empty {
+    visibility: hidden;
+}
 
 .ling-gloss-preamble {
     font-weight: bold;
@@ -55,44 +72,4 @@
 
 .ling-gloss-level-a.ling-style-cjk {
     font-style: unset !important;
-}
-
-/* Font scale style overrides */
-
-.ling-style-f80 {
-    font-size: 0.8em !important;
-}
-
-.ling-style-f90 {
-    font-size: 0.9em !important;
-}
-
-.ling-style-f100 {
-    font-size: 1.0em !important;
-}
-
-.ling-style-f110 {
-    font-size: 1.1em !important;
-}
-
-.ling-style-f120 {
-    font-size: 1.2em !important;
-}
-
-.ling-style-f130 {
-    font-size: 1.3em !important;
-}
-
-.ling-style-f140 {
-    font-size: 1.4em !important;
-}
-
-/* Writing direction style overrides */
-
-.ling-style-rtl {
-    direction: rtl !important;
-}
-
-.ling-style-ltr {
-    direction: ltr !important;
 }
