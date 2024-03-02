@@ -7,6 +7,7 @@ export interface GlossOptions {
     global?: GlossLineStyle;
     preamble?: GlossLineStyle;
     translation?: GlossLineStyle;
+    source?: GlossLineStyle;
     levelA?: GlossLineStyle;
     levelB?: GlossLineStyle;
     levelC?: GlossLineStyle;
@@ -21,7 +22,9 @@ export interface GlossElement {
 }
 
 export interface GlossData {
+    number: string;
     label: string;
+    source: string;
     preamble: string;
     elements: GlossElement[];
     translation: string;
@@ -41,7 +44,9 @@ export const initGlossLineStyle = (): GlossLineStyle => ({
 })
 
 export const initGlossData = (): GlossData => ({
+    number: "",
     label: "",
+    source: "",
     preamble: "",
     elements: [],
     translation: "",

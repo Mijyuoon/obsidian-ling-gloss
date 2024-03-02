@@ -119,6 +119,40 @@ A gloss can be numbered using the `\num` command for the purpose of referencing 
 
 ![Example 16](_examples/example16.png)
 
+## Additional label (`\lbl`)
+
+An additional label can be added at the top of a gloss using the `\lbl` command, usually for the purpose of specifying the language that's being shown. This command takes a single line of text.
+
+```
+\num 1
+\lbl Hungarian
+\gla Péter-nek van egy macská-ja
+\glb Peter-DAT exist INDEF cat-POSS.3SG
+```
+
+```
+\num 2
+\lbl Mandarin Chinese
+\gla [nǐ hǎo] [shì jiè]
+\glb hello world
+```
+
+![Example 17](_examples/example17.png)
+
+## Text source (`\src`)
+
+A source for the text in a gloss can be specified using the `\src` command, which takes a single line of text. By default, the source is shown directly after the free translation.
+
+```
+\ex János tegnap elvitt két könyvet Péternek.
+\gla János tegnap elvi-tt két könyv-et Péter-nek.
+\glb John:NOM yesterday take-PST two book-ACC Peter-DAT
+\ft John took two books to Peter yesterday.
+\src Wikipedia – Hungarian Grammar; 2024
+```
+
+![Example 18](_examples/example18.png)
+
 ## Alternative syntax (`\gl`)
 
 An alternative syntax for gloss lines is available, where source language elements are adjacent to their glosses in the markup. This has an advantage of making the markup easier to read and write, especially for longer glosses.
@@ -206,15 +240,35 @@ This class represents the unmodified source text (preamble) line.
 
 ![Example 09](_examples/example09.png)
 
+### `.ling-gloss-postamble`
+
+This class represents the free translation and source (postamble) line.
+
+```css
+.ling-gloss-postamble { border: solid 2px red; }
+```
+
+![Example 10](_examples/example10.png)
+
 ### `.ling-gloss-translation`
 
-This class represents the free translation line.
+This class represents the free translation part of the postamble line.
 
 ```css
 .ling-gloss-translation { border: solid 2px red; }
 ```
 
-![Example 10](_examples/example10.png)
+![Example 19](_examples/example19.png)
+
+### `.ling-gloss-source`
+
+This class represents the source part of the postamble line.
+
+```css
+.ling-gloss-source { border: solid 2px red; }
+```
+
+![Example 20](_examples/example20.png)
 
 ### `.ling-gloss-element`
 
@@ -260,6 +314,26 @@ Note that the `level-x` style applies to *all* lines after the level C line, how
 
 ![Example 12b](_examples/example12b.png)
 
+### `.ling-gloss-number`
+
+This class represent the number on the left of a gloss block.
+
+```css
+.ling-gloss-number { border: solid 2px red; }
+```
+
+![Example 21](_examples/example21.png)
+
+### `.ling-gloss-label`
+
+This class represents the additional label shown at the start of a gloss.
+
+```css
+.ling-gloss-label { border: solid 2px red; }
+```
+
+![Example 22](_examples/example22.png)
+
 ## Setting Options (`\set`)
 
 There are some options that can be changed for an individual gloss block using the `\set` command, which takes an option name and, depending on the command:
@@ -282,7 +356,7 @@ This option enables using underscore characters for whitespace in level A elemen
 
 ![Example 13](_examples/example13.png)
 
-### `style`, `gl*style`, `exstyle`, `ftstyle`
+### `style`, `gl*style`, `exstyle`, `ftstyle`, `srcstyle`
 
 These options assign custom CSS classes to various parts of a rendered gloss to allow for selective customization of individual glosses. All these options accept a list of CSS class names as values. Each command targets a specific part of a gloss as follows:
 
@@ -290,7 +364,8 @@ These options assign custom CSS classes to various parts of a rendered gloss to 
 - `gl*style` – Targets an element on a specific gloss line, where `*` is one of the lowercase letters `a`, `b`, `c` or `x`, that corresponds to the level of that line.
 	- Note that `glxstyle` applies to *all* lines after the level C line. See [`.ling-gloss-level-*`](#ling-gloss-level) for details.
 - `exstyle` – Targets the unmodified source text (preamble) line.
-- `ftstyle` – targets the free translation line.
+- `ftstyle` – Targets the free translation part of the postamble line.
+- `srcstyle` – Targets the source part of the postamble line.
 
 For each provided class name, a CSS class called `.ling-style-*` is assigned to the target, where `*` is the provided class name.
 
@@ -317,9 +392,14 @@ The following gloss should be displayed as shown here:
 
 ![Example 14](_examples/example14.png)
 
-By default, the plugin defines a style called `cjk` for the `glastyle` option that removes the default italics styling. This is meant to be used with CJK characters which do not normally use italics:
+## Predefined style overrides
 
-```ngloss
+By default, the plugin defines several useful style overrides for use with the `*style` options described earlier. These overrides are described below.
+
+### `cjk` (for `glastyle`)
+This is a style that removes the default italics styling. This is meant to be used with CJK characters which do not normally use italics:
+
+```
 \set glastyle cjk
 \gl 你好 [nǐhǎo] [hello]
 	世界 [shìjiè] [world]
@@ -330,6 +410,54 @@ By default, the plugin defines a style called `cjk` for the `glastyle` option th
 And the same gloss with the `\set` line removed:
 
 ![Example 15b](_examples/example15b.png)
+
+### `right` (for `srcstyle`)
+
+This is a style that right-aligns the source instead of putting it directly after the free translation:
+
+```
+\set srcstyle right
+\gl Péter-nek[Peter-DAT]
+	van[exist]
+	egy[INDEF]
+	macská-ja[cat-POSS.3SG]
+\ft Peter has a cat.
+\src The author of this document; 2024
+```
+
+![Example 23](_examples/example23.png)
+
+### `line` (for `srcstyle`)
+
+This is a style that places the source on a new line instead of putting it directly after the free translation:
+
+```
+\set srcstyle line
+\gl Péter-nek[Peter-DAT]
+	van[exist]
+	egy[INDEF]
+	macská-ja[cat-POSS.3SG]
+\ft Peter has a cat.
+\src The author of this document; 2024
+```
+
+![Example 24](_examples/example24.png)
+
+### `alt` (for `srcstyle`)
+
+This is a style that's meant to select an alternative appearance for the source. Currently, it changes the round brackes to the square ones.
+
+```
+\set srcstyle alt
+\gl Péter-nek[Peter-DAT]
+	van[exist]
+	egy[INDEF]
+	macská-ja[cat-POSS.3SG]
+\ft Peter has a cat.
+\src The author of this document; 2024
+```
+
+![Example 25](_examples/example25.png)
 
 # Installation
 

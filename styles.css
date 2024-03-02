@@ -14,14 +14,18 @@
 /* Gloss element layout */
 
 .ling-gloss {
+    width: 100%;
     display: flex;
     margin-block-start: 1em;
     margin-block-end: 1em;
 }
 
-.ling-gloss-label {
-    min-width: 1em;
+.ling-gloss-number {
     padding-inline-end: 1em;
+}
+
+.ling-gloss-body {
+    flex-grow: 1;
 }
 
 .ling-gloss-body > div:not(:last-child) {
@@ -34,17 +38,23 @@
     gap: 1em 1em;
 }
 
+.ling-gloss-postamble {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5em;
+}
+
 /* Gloss element appearance */
 
-.ling-gloss-label::before {
+.ling-gloss-number::before {
     content: "(";
 }
 
-.ling-gloss-label::after {
+.ling-gloss-number::after {
     content: ")";
 }
 
-.ling-gloss-label:empty {
+.ling-gloss-number:empty {
     visibility: hidden;
 }
 
@@ -64,8 +74,38 @@
     content: "”";
 }
 
+.ling-gloss-source::before {
+    content: "(";
+}
+
+.ling-gloss-source::after {
+    content: ")";
+}
+
 .ling-gloss-level-a {
     font-style: italic;
+}
+
+/* Gloss source layout overrides */
+
+.ling-gloss-source.ling-style-right {
+    flex-grow: 1 !important;
+    text-align: right !important;
+}
+
+.ling-gloss-source.ling-style-line {
+    flex-grow: 1 !important;
+    flex-basis: 100% !important;
+}
+
+/* Gloss source appearance overrides */
+
+.ling-gloss-source.ling-style-alt::before {
+    content: "[" !important;
+}
+
+.ling-gloss-source.ling-style-alt::after {
+    content: "]" !important;
 }
 
 /* Language-specific style overrides */

@@ -13,8 +13,12 @@ export enum CommandType {
     glc,
     // N-level gloss elements
     gl,
-    // Number or other label
+    // Number on the left side
     num,
+    // Title or label
+    lbl,
+    // Source or reference
+    src,
     // Miscelaneous options
     set,
 }
@@ -24,6 +28,7 @@ export enum SetOptionType {
     style,
     exstyle,
     ftstyle,
+    srcstyle,
     glastyle,
     glbstyle,
     glcstyle,

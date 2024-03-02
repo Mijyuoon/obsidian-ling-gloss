@@ -13,7 +13,9 @@ type OptionalKeysOfType<O, T> = NonNullable<{ [K in keyof O]?: O[K] extends T | 
 const GlossStrings: Partial<Record<CommandType, KeysOfType<GlossData, string>>> = {
     [CommandType.ex]: "preamble",
     [CommandType.ft]: "translation",
-    [CommandType.num]: "label",
+    [CommandType.num]: "number",
+    [CommandType.lbl]: "label",
+    [CommandType.src]: "source",
 }
 
 const GlossLevels: Partial<Record<CommandType, KeysOfType<GlossElement, string>>> = {
@@ -26,6 +28,7 @@ const GlossLineStyles: Partial<Record<SetOptionType, OptionalKeysOfType<GlossOpt
     [SetOptionType.style]: "global",
     [SetOptionType.exstyle]: "preamble",
     [SetOptionType.ftstyle]: "translation",
+    [SetOptionType.srcstyle]: "source",
     [SetOptionType.glastyle]: "levelA",
     [SetOptionType.glbstyle]: "levelB",
     [SetOptionType.glcstyle]: "levelC",
@@ -70,6 +73,8 @@ export class GlossParser {
             case CommandType.ex:
             case CommandType.ft:
             case CommandType.num:
+            case CommandType.lbl:
+            case CommandType.src:
                 this.parseStringField(params, GlossStrings[type]!);
                 break;
 
@@ -98,6 +103,7 @@ export class GlossParser {
             case SetOptionType.style:
             case SetOptionType.exstyle:
             case SetOptionType.ftstyle:
+            case SetOptionType.srcstyle:
             case SetOptionType.glastyle:
             case SetOptionType.glbstyle:
             case SetOptionType.glcstyle:
