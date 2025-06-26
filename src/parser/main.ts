@@ -108,7 +108,7 @@ export class GlossParser {
     }
 
     private handleSetCommand(data: IGlossData, params: IToken[], star: boolean) {
-        const optionParam = params.shift();
+        const [optionParam, ...valueParams] = params;
         checkValueSimple(optionParam, "no option name");
 
         const option = this.setOptionTable[optionParam!.value];
@@ -119,25 +119,25 @@ export class GlossParser {
 
         switch (option.type) {
             case "flag":
-                checkAnyValues(params);
+                checkAnyValues(valueParams);
 
                 // `set` – enable the flag, `set*` – disable the flag
                 updateObjectField(object, objectKeys, () => !star);
                 break;
 
             case "one":
-                checkNoValues(params);
-                checkMultiValues(params);
+                checkNoValues(valueParams);
+                checkMultiValues(valueParams);
 
-                updateObjectField(object, objectKeys, () => params[0].value);
+                updateObjectField(object, objectKeys, () => valueParams[0].value);
                 break;
 
             case "list":
                 // Do not allow no values when appending
-                if (!star) checkNoValues(params);
+                if (!star) checkNoValues(valueParams);
 
                 updateObjectField(object, objectKeys, (value: string[]) => {
-                    const newValue = params.map(p => p.value);
+                    const newValue = valueParams.map(p => p.value);
 
                     // `set` – append to the list, `set*` – replace the list
                     return star ? newValue : [...value, ...newValue];
