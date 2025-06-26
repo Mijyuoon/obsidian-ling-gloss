@@ -105,13 +105,13 @@ If a command line feels too long, it may be broken into multiple lines by indent
 
 A gloss can be numbered using the `\num` command for the purpose of referencing it from the rest of the document. Currently, this command takes a line of text that is directly used as the label for the gloss. This may be replaced with an auto-numbering system in the future.
 
-```
+```gloss
 \num 1
 \gla Péter-nek van egy macská-ja
 \glb Peter-DAT exist INDEF cat-POSS.3SG
 ```
 
-```
+```gloss
 \num 2
 \gla [nǐ hǎo] [shì jiè]
 \glb hello world
@@ -123,14 +123,14 @@ A gloss can be numbered using the `\num` command for the purpose of referencing 
 
 An additional label can be added at the top of a gloss using the `\lbl` command, usually for the purpose of specifying the language that's being shown. This command takes a single line of text.
 
-```
+```gloss
 \num 1
 \lbl Hungarian
 \gla Péter-nek van egy macská-ja
 \glb Peter-DAT exist INDEF cat-POSS.3SG
 ```
 
-```
+```gloss
 \num 2
 \lbl Mandarin Chinese
 \gla [nǐ hǎo] [shì jiè]
@@ -143,7 +143,7 @@ An additional label can be added at the top of a gloss using the `\lbl` command,
 
 A source for the text in a gloss can be specified using the `\src` command, which takes a single line of text. By default, the source is shown directly after the free translation.
 
-```
+```gloss
 \ex János tegnap elvitt két könyvet Péternek.
 \gla János tegnap elvi-tt két könyv-et Péter-nek.
 \glb John:NOM yesterday take-PST two book-ACC Peter-DAT
@@ -334,13 +334,19 @@ This class represents the additional label shown at the start of a gloss.
 
 ![Example 22](_examples/example22.png)
 
-## Setting Options (`\set`)
+## Setting Options (`\set`, `\set*`)
 
 There are some options that can be changed for an individual gloss block using the `\set` command, which takes an option name and, depending on the command:
 
 - No values (for binary switch options)
 - A single value (multiple spaces between value tokens are collapsed into a single one)
 - A list of values (bracketed `[tokens]` can be used for values with spaces in them)
+
+The `\set*` command is a special variant of the regular `\set` command which is mainly intended for overriding default options that have been configured in the plugin settings. The way its behavior differs depends on the number of values that a given command takes:
+
+- For no values – unsets the binary switch, instead of setting it.
+- For a single value – no differences from the `\set` command.
+- For a list of values – removes the default values from the list, instead of appending to them.
 
 Below is the list of available options with examples.
 
@@ -355,6 +361,12 @@ This option enables using underscore characters for whitespace in level A elemen
 ```
 
 ![Example 13](_examples/example13.png)
+
+### `markup`
+
+This option enables processing of the text formatting markup in the source text, the gloss elements and the free translation. This option takes no values.
+
+**NOTE:** The markup processing is currently not implemented and will cause an error if enabled.
 
 ### `style`, `gl*style`, `exstyle`, `ftstyle`, `srcstyle`
 
@@ -399,7 +411,7 @@ By default, the plugin defines several useful style overrides for use with the `
 ### `cjk` (for `glastyle`)
 This is a style that removes the default italics styling. This is meant to be used with CJK characters which do not normally use italics:
 
-```
+```ngloss
 \set glastyle cjk
 \gl 你好 [nǐhǎo] [hello]
 	世界 [shìjiè] [world]
@@ -415,7 +427,7 @@ And the same gloss with the `\set` line removed:
 
 This is a style that right-aligns the source instead of putting it directly after the free translation:
 
-```
+```ngloss
 \set srcstyle right
 \gl Péter-nek[Peter-DAT]
 	van[exist]
@@ -431,7 +443,7 @@ This is a style that right-aligns the source instead of putting it directly afte
 
 This is a style that places the source on a new line instead of putting it directly after the free translation:
 
-```
+```ngloss
 \set srcstyle line
 \gl Péter-nek[Peter-DAT]
 	van[exist]
@@ -447,7 +459,7 @@ This is a style that places the source on a new line instead of putting it direc
 
 This is a style that's meant to select an alternative appearance for the source. Currently, it changes the round brackes to the square ones.
 
-```
+```ngloss
 \set srcstyle alt
 \gl Péter-nek[Peter-DAT]
 	van[exist]
@@ -458,6 +470,14 @@ This is a style that's meant to select an alternative appearance for the source.
 ```
 
 ![Example 25](_examples/example25.png)
+
+## Plugin Settings
+
+Since the version 2.0 it is possible to set the default values for any of the options listed in the previous section. These defaults will then apply to all glosses in a vault without having to repeat `\set` commands in every one of them.
+
+To configure the defaults, go to the plugin settings (*Settings → Interlinear Glossing*) menu.
+
+![Example 26](_examples/example26.png)
 
 # Installation
 
