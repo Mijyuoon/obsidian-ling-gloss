@@ -1,3 +1,10 @@
+/* Settings tab appearance */
+
+.ling-gloss-settings-wide {
+    flex-grow: 1;
+    max-width: 250px;
+}
+
 /* Error message appearance */
 
 .ling-gloss-error {

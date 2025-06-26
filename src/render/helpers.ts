@@ -1,4 +1,5 @@
 import { IGlossOptionStyles } from "src/data/gloss";
+import { sanitizeCssClass } from "src/utils";
 
 interface IBlockOptions {
     kind: string;
@@ -12,8 +13,7 @@ export const getStyleKind = (kind: string) =>
     kind.length > 0 ? `ling-gloss-${kind}` : "ling-gloss";
 
 export const getStyleClasses = (classes: string[]) =>
-    classes
-        .map(cls => cls.replace(/[^a-z0-9_-]+/ig, "-"))
+    sanitizeCssClass(classes)
         .filter(cls => cls.length > 0)
         .map(cls => `ling-style-${cls}`);
 

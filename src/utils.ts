@@ -80,3 +80,11 @@ export const arrayFill = <T>(array: T[], limit: number, func: (index: number) =>
 
     return array;
 }
+
+
+const CssClassRegex = /[^a-z0-9_-]+/ig;
+
+export const sanitizeCssClass = <T extends string | string[]>(classes: T): T =>
+    Array.isArray(classes)
+        ? classes.map(cls => cls.replace(CssClassRegex, "-")) as T
+        : classes.replace(CssClassRegex, "-") as T;
