@@ -12,25 +12,25 @@ export class PluginSettingsTab extends PluginSettingTab {
 
     display() {
         this.containerEl.empty();
-        this.addGlossFlagSettings();
+        this.addSwitchSettings();
         this.addStyleSettings();
     }
 
-    private addGlossFlagSettings() {
+    private addSwitchSettings() {
         const desc = new DocumentFragment();
-        desc.appendText("Default feature flag settings for all glosses.");
+        desc.appendText("Default feature switch settings for all glosses.");
         desc.createEl("br");
         desc.appendText("To unset the enabled ones, the ");
         desc.createEl("code", { text: " \\set*" });
         desc.appendText(" command can be used.");
 
         new Setting(this.containerEl)
-            .setName("Feature flags")
+            .setName("Feature switches")
             .setDesc(desc)
             .setHeading();
 
-        this.addGlossFlagSettingByKey("altSpaces", "Alternate spaces", "glaspaces");
-        this.addGlossFlagSettingByKey("useMarkup", "Process markup", "markup");
+        this.addSwitchSettingByKey("altSpaces", "Alternate spaces", "glaspaces");
+        this.addSwitchSettingByKey("useMarkup", "Process markup", "markup");
     }
 
     private addStyleSettings() {
@@ -88,11 +88,11 @@ export class PluginSettingsTab extends PluginSettingTab {
             });
     }
 
-    private addGlossFlagSettingByKey(flag: KeysOfType<IGlossOptions, boolean>, label: string, command: string) {
+    private addSwitchSettingByKey(flag: KeysOfType<IGlossOptions, boolean>, label: string, command: string) {
         const gloss = this.settings.get("gloss");
 
         const desc = new DocumentFragment();
-        desc.appendText("Default setting for the ");
+        desc.appendText("Default switch setting for the ");
         desc.createEl("code", { text: `\\set ${command}` });
         desc.appendText(" option.");
 
