@@ -25,8 +25,10 @@ export class PluginSettingsWrapper {
         await this.save();
     }
 
-    get<K extends keyof IPluginSettings>(key: K): IPluginSettings[K] {
-        return this.settings[key];
+    get(): IPluginSettings;
+    get<K extends keyof IPluginSettings>(key: K): IPluginSettings[K];
+    get<K extends keyof IPluginSettings>(key?: K): IPluginSettings[K] | IPluginSettings {
+        return key != null ? this.settings[key] : this.settings;
     }
 
     set<K extends keyof IPluginSettings>(key: K, value: IPluginSettings[K]) {

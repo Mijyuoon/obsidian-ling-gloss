@@ -1,9 +1,13 @@
-import { IGlossData, IGlossOptions } from "src/data/gloss";
+import { IGlossData } from "src/data/gloss";
+import { getDefaultAlignMarkers } from "src/data/settings";
+import { PluginSettingsWrapper } from "src/settings/wrapper";
 
 import { formatWhitespace, getLevelMetadata, getStyleClasses, getStyleKind, renderBlock } from "./helpers";
 
 
 export class GlossRenderer {
+    constructor(private settings: PluginSettingsWrapper) { }
+
     renderErrors(target: HTMLElement, errors: string[]) {
         target.empty();
 
@@ -49,8 +53,26 @@ export class GlossRenderer {
         if (data.elements.length > 0) {
             const elements = gloss.createDiv({ cls: getStyleKind("elements") });
 
+            const alignMarkers = this.getAlignMarkers();
+
             for (const { levels } of data.elements) {
                 const element = elements.createDiv({ cls: getStyleKind("element") });
+
+                if (alignMarkers) {
+                    const level = levels[this.settings.get("alignLevel")] ?? "";
+
+                    const isLeft = alignMarkers.some(mark => level.startsWith(mark));
+                    const isRight = alignMarkers.some(mark => level.endsWith(mark));
+
+                    if (isLeft && !isRight) {
+                        element.addClass(getStyleKind("align-left"));
+                    } else if (!isLeft && isRight) {
+                        element.addClass(getStyleKind("align-right"));
+                    } else if (this.settings.get("alignCenter")) {
+                        // Center align if either none or both sides have a marker
+                        element.addClass(getStyleKind("align-center"));
+                    }
+                }
 
                 for (const [levelNo, level] of levels.entries()) {
                     const [levelKind, styleKey] = getLevelMetadata(levelNo);
@@ -88,6 +110,14 @@ export class GlossRenderer {
 
         if (!gloss.hasChildNodes()) {
             return this.renderErrors(target, ["this gloss contains no elements"]);
+        }
+    }
+
+    private getAlignMarkers(): string[] | null {
+        switch (this.settings.get("alignMode")) {
+            case "none": return null;
+            case "default": return getDefaultAlignMarkers();
+            case "custom": return this.settings.get("alignCustom");
         }
     }
 

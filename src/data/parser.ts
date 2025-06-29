@@ -1,5 +1,6 @@
 import { ChainedKeysOf } from "src/utils";
 
+
 type TokenType = "simple" | "quoted";
 
 export interface IToken {

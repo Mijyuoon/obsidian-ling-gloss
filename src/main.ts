@@ -9,7 +9,7 @@ import { PluginSettingsWrapper } from "src/settings/wrapper";
 export default class LingGlossPlugin extends Plugin {
     settings = new PluginSettingsWrapper(this);
     parser = new GlossParser(this.settings);
-    renderer = new GlossRenderer();
+    renderer = new GlossRenderer(this.settings);
 
     async onload() {
         await this.settings.load();

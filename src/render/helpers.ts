@@ -1,21 +1,12 @@
 import { IGlossOptionStyles } from "src/data/gloss";
-import { sanitizeCssClass } from "src/utils";
+import { sanitizeCssClasses } from "src/utils";
 
-interface IBlockOptions {
-    kind: string;
-    text: string;
-    cls?: string[];
-    always?: boolean;
-    format?: (text: string) => string | DocumentFragment;
-}
 
 export const getStyleKind = (kind: string) =>
     kind.length > 0 ? `ling-gloss-${kind}` : "ling-gloss";
 
 export const getStyleClasses = (classes: string[]) =>
-    sanitizeCssClass(classes)
-        .filter(cls => cls.length > 0)
-        .map(cls => `ling-style-${cls}`);
+    sanitizeCssClasses(classes).map(cls => `ling-style-${cls}`);
 
 export const getLevelMetadata = (level: number): [string, keyof IGlossOptionStyles] => {
     switch (level) {
@@ -24,6 +15,15 @@ export const getLevelMetadata = (level: number): [string, keyof IGlossOptionStyl
         case 2: return ["level-c", "levelC"];
         default: return ["level-x", "levelX"];
     }
+}
+
+
+interface IBlockOptions {
+    kind: string;
+    text: string;
+    cls?: string[];
+    always?: boolean;
+    format?: (text: string) => string | DocumentFragment;
 }
 
 export const formatWhitespace = (text: string): string =>

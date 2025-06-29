@@ -1,8 +1,11 @@
 import { PluginSettingTab, Plugin, Setting } from "obsidian";
 
-import { PluginSettingsWrapper } from "./wrapper";
 import { IGlossOptions, IGlossOptionStyles } from "src/data/gloss";
-import { KeysOfType, sanitizeCssClass } from "src/utils";
+import { GlossAlignMode } from "src/data/settings";
+import { KeysOfType, sanitizeCssClasses } from "src/utils";
+
+import { makeDesc } from "./helpers";
+import { PluginSettingsWrapper } from "./wrapper";
 
 
 export class PluginSettingsTab extends PluginSettingTab {
@@ -12,21 +15,102 @@ export class PluginSettingsTab extends PluginSettingTab {
 
     display() {
         this.containerEl.empty();
+
+        this.addAlignModeSettings();
         this.addSwitchSettings();
         this.addStyleSettings();
     }
 
-    private addSwitchSettings() {
-        const desc = new DocumentFragment();
-        desc.appendText("Default feature switch settings for all glosses.");
-        desc.createEl("br");
-        desc.appendText("To unset the enabled ones, the ");
-        desc.createEl("code", { text: " \\set*" });
-        desc.appendText(" command can be used.");
+    private addAlignModeSettings() {
+        const { alignMode, alignCenter, alignLevel, alignCustom } = this.settings.get();
 
         new Setting(this.containerEl)
+            .setName("Align gloss elements")
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Horizontal alignment of gloss elements that have certain marker characters on either side.");
+                desc.createEl("br");
+                desc.appendText("The default markers are: ");
+                desc.createEl("code", { text: "-" });
+                desc.appendText(" (hyphen), ");
+                desc.createEl("code", { text: "=" });
+                desc.appendText(" (equals sign), ");
+                desc.createEl("code", { text: "~" });
+                desc.appendText(" (tilde).");
+            }))
+            .addDropdown(component => {
+                component
+                    .addOptions({
+                        none: "No alignment",
+                        default: "Default markers",
+                        custom: "Custom markers",
+                    })
+                    .setValue(alignMode)
+                    .onChange(async value => {
+                        await this.settings.update({
+                            alignMode: value as GlossAlignMode,
+                        });
+                    });
+            });
+
+        new Setting(this.containerEl)
+            .setName("Default center alignment")
+            .setDesc("Center align gloss elements which do not have any alignment markers on either side.")
+            .addToggle(component => {
+                component
+                    .setValue(alignCenter)
+                    .onChange(async value => {
+                        await this.settings.update({
+                            alignCenter: value,
+                        });
+                    });
+            });
+
+        new Setting(this.containerEl)
+            .setName("Gloss line for alignment")
+            .setDesc("The line on which gloss elements are checked for the selected alignment markers.")
+            .addDropdown(component => {
+                component
+                    .addOptions({
+                        0: "Level A",
+                        1: "Level B",
+                        2: "Level C",
+                    })
+                    .setValue(alignLevel.toFixed(0))
+                    .onChange(async value => {
+                        await this.settings.update({
+                            alignLevel: Number(value),
+                        });
+                    });
+            });
+
+        new Setting(this.containerEl)
+            .setName("Custom alignment markers")
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Space separated list of custom marker characters for gloss element alignment.");
+                desc.createEl("br");
+                desc.appendText("Only has an effect when the gloss element alignment is set to “Custom markers”.");
+            }))
+            .addText(component => {
+                component
+                    .setValue(alignCustom.join(" "))
+                    .onChange(async value => {
+                        await this.settings.update({
+                            alignCustom: value.split(/\s+/),
+                        });
+                    });
+            });
+    }
+
+    private addSwitchSettings() {
+        new Setting(this.containerEl)
             .setName("Feature switches")
-            .setDesc(desc)
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Default feature switch settings for all glosses.");
+                desc.createEl("br");
+                desc.appendText("To unset the enabled ones, the ");
+                desc.createEl("code", { text: " \\set*" });
+                desc.appendText(" command can be used.");
+            }))
             .setHeading();
 
         this.addSwitchSettingByKey("altSpaces", "Alternate spaces", "glaspaces");
@@ -34,18 +118,17 @@ export class PluginSettingsTab extends PluginSettingTab {
     }
 
     private addStyleSettings() {
-        const desc = new DocumentFragment();
-        desc.appendText("Default style classes for all glosses. The ");
-        desc.createEl("code", { text: "\\set" });
-        desc.appendText(" command will append to these.");
-        desc.createEl("br");
-        desc.appendText("To replace or remove these, the ");
-        desc.createEl("code", { text: "\\set*" });
-        desc.appendText(" command can be used instead.");
-
         new Setting(this.containerEl)
             .setName("Style classes")
-            .setDesc(desc)
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Default style classes for all glosses. The ");
+                desc.createEl("code", { text: "\\set" });
+                desc.appendText(" command will append to these.");
+                desc.createEl("br");
+                desc.appendText("To replace or remove these, the ");
+                desc.createEl("code", { text: "\\set*" });
+                desc.appendText(" command can be used instead.");
+            }))
             .setHeading();
 
         this.addStyleSettingByKey("global", "Global styles", "style");
@@ -61,14 +144,13 @@ export class PluginSettingsTab extends PluginSettingTab {
     private addStyleSettingByKey(style: keyof IGlossOptionStyles, label: string, command: string) {
         const { styles } = this.settings.get("gloss");
 
-        const desc = new DocumentFragment();
-        desc.appendText("Default style classes for the ");
-        desc.createEl("code", { text: `\\set ${command}` });
-        desc.appendText(" option.");
-
         new Setting(this.containerEl)
             .setName(label)
-            .setDesc(desc)
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Default style classes for the ");
+                desc.createEl("code", { text: `\\set ${command}` });
+                desc.appendText(" option.");
+            }))
             .addText(component => {
                 component
                     .setPlaceholder("class1 class2 ...")
@@ -77,7 +159,7 @@ export class PluginSettingsTab extends PluginSettingTab {
                         await this.settings.update({
                             gloss: {
                                 styles: {
-                                    [style]: sanitizeCssClass(value.split(/\s+/)),
+                                    [style]: sanitizeCssClasses(value.split(/\s+/)),
                                 }
                             }
                         });
@@ -91,14 +173,13 @@ export class PluginSettingsTab extends PluginSettingTab {
     private addSwitchSettingByKey(flag: KeysOfType<IGlossOptions, boolean>, label: string, command: string) {
         const gloss = this.settings.get("gloss");
 
-        const desc = new DocumentFragment();
-        desc.appendText("Default switch setting for the ");
-        desc.createEl("code", { text: `\\set ${command}` });
-        desc.appendText(" option.");
-
         new Setting(this.containerEl)
             .setName(label)
-            .setDesc(desc)
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Default switch setting for the ");
+                desc.createEl("code", { text: `\\set ${command}` });
+                desc.appendText(" option.");
+            }))
             .addToggle(component => {
                 component
                     .setValue(gloss[flag])

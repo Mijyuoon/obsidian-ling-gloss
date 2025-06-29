@@ -1,5 +1,6 @@
 import { deepCopy } from "src/utils";
 
+
 export interface IGlossOptionStyles {
     global: string[];
     levelA: string[];

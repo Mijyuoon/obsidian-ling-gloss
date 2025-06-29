@@ -93,6 +93,20 @@
     font-style: italic;
 }
 
+/* Gloss element horizontal alignment */
+
+.ling-gloss-element.ling-gloss-align-left {
+    text-align: start;
+}
+
+.ling-gloss-element.ling-gloss-align-right {
+    text-align: end;
+}
+
+.ling-gloss-element.ling-gloss-align-center {
+    text-align: center;
+}
+
 /* Gloss source layout overrides */
 
 .ling-gloss-source.ling-style-right {
