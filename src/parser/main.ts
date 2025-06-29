@@ -83,6 +83,8 @@ export class GlossParser {
     }
 
     private handleGlossCommand(data: IGlossData, params: IToken[], level: number) {
+        if (data.nlevel) throw "command “@@” is only allowed in regular mode";
+
         checkNoValues(params);
 
         arrayFill(data.elements, params.length, () => createGlossElement());
@@ -94,6 +96,8 @@ export class GlossParser {
     }
 
     private handleMultiGlossCommand(data: IGlossData, params: IToken[]) {
+        if (!data.nlevel) throw "command “@@” is only allowed in n-level mode";
+
         checkNoValues(params);
         checkValueSimple(params.first(), "invalid gloss element");
 
