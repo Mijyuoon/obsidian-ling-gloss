@@ -471,13 +471,32 @@ This is a style that's meant to select an alternative appearance for the source.
 
 ![Example 25](_examples/example25.png)
 
-## Plugin Settings
+## Option Defaults
 
 Since the version 2.0 it is possible to set the default values for any of the options listed in the previous section. These defaults will then apply to all glosses in a vault without having to repeat `\set` commands in every one of them.
 
 To configure the defaults, go to the plugin settings (*Settings → Interlinear Glossing*) menu.
 
 ![Example 26](_examples/example26.png)
+
+## Gloss Element Aligning
+
+Since the version 2.0 there is an option to horizontally align the text in individual gloss elements towards the side that starts/ends with one of certain "marker" characters. Such characters are normally the affix and clitic boundary indicators (i.e. hyphen and equals sign), but custom characters can be configured instead. There is also a separately toggleable option to center align the elements that lack a "marker" character on either end.
+
+To configure the element alignment, go to the plugin settings (*Settings → Interlinear Glossing*) menu.
+
+![Example 27](_examples/example27.png)
+
+An example gloss using the above options is shown below:
+
+```gloss
+\ex imadu avelamo sobala de putri keraka.
+\gla ima -du a- vela -mo soba -la de putri kera -ka
+\glb 1 -EXP POSS- house -PTV near -LOC DEF.SG person see -PFV
+\ft I saw a (certain) person near my house.
+```
+
+![Example 28](_examples/example28.png)
 
 # Installation
 
