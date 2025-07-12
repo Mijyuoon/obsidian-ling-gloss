@@ -5,6 +5,12 @@ import { PluginSettingsWrapper } from "src/settings/wrapper";
 import { formatWhitespace, getLevelMetadata, getStyleClasses, getStyleKind, renderBlock } from "./helpers";
 
 
+interface IFormatFlags {
+    useNbsp?: boolean;
+    glaSpaces?: boolean;
+    useMarkup?: boolean;
+}
+
 export class GlossRenderer {
     constructor(private settings: PluginSettingsWrapper) { }
 
@@ -32,6 +38,7 @@ export class GlossRenderer {
             kind: "number",
             text: data.number.value,
             always: true,
+            format: (text) => formatWhitespace(text, true),
         });
 
         const gloss = container.createDiv({
@@ -47,7 +54,7 @@ export class GlossRenderer {
             kind: "preamble",
             cls: styles.preamble,
             text: data.preamble,
-            format: (text) => this.formatText(text, false, useMarkup),
+            format: (text) => this.formatText(text, { useMarkup }),
         });
 
         if (data.elements.length > 0) {
@@ -85,7 +92,11 @@ export class GlossRenderer {
                         cls: styles[styleKey],
                         text: level,
                         always: true,
-                        format: (text) => this.formatText(text, glaSpaces, useMarkup),
+                        format: (text) => this.formatText(text, {
+                            useMarkup,
+                            glaSpaces,
+                            useNbsp: true,
+                        }),
                     });
                 }
             }
@@ -98,7 +109,7 @@ export class GlossRenderer {
                 kind: "translation",
                 cls: styles.translation,
                 text: data.translation,
-                format: (text) => this.formatText(text, false, useMarkup),
+                format: (text) => this.formatText(text, { useMarkup }),
             });
 
             renderBlock(postamble, {
@@ -121,17 +132,17 @@ export class GlossRenderer {
         }
     }
 
-    private formatText(text: string, altSpaces: boolean, useMarkup: boolean): string | DocumentFragment {
-        if (altSpaces) {
+    private formatText(text: string, format: IFormatFlags): string | DocumentFragment {
+        if (format.glaSpaces) {
             // Replace underscores with whitespace
             text = text.replace(/[_]+/, " ");
         }
 
         // TODO: Implement markup rendering
-        if (useMarkup) {
+        if (format.useMarkup) {
             throw "not implemented yet";
         }
 
-        return formatWhitespace(text);
+        return formatWhitespace(text, format.useNbsp);
     }
 }

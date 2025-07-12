@@ -26,8 +26,8 @@ interface IBlockOptions {
     format?: (text: string) => string | DocumentFragment;
 }
 
-export const formatWhitespace = (text: string): string =>
-    text.replace(/\s+/g, "\u00A0");
+export const formatWhitespace = (text: string, nbsp = false): string =>
+    text.replace(/\s+/g, nbsp ? "\u00A0" : " ");
 
 export const renderBlock = (target: HTMLElement, options: IBlockOptions) => {
     if (options.text.length < 1 && !options.always) return;
