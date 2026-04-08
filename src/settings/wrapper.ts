@@ -1,7 +1,7 @@
 import { Plugin } from "obsidian";
 
 import { IPluginSettings, getDefaultPluginSettings } from "src/data/settings";
-import { DeepPartial, deepMerge } from "src/utils";
+import { DeepPartial, deepMerge, pickKeys } from "src/utils";
 
 
 export class PluginSettingsWrapper {
@@ -27,8 +27,11 @@ export class PluginSettingsWrapper {
 
     get(): IPluginSettings;
     get<K extends keyof IPluginSettings>(key: K): IPluginSettings[K];
-    get<K extends keyof IPluginSettings>(key?: K): IPluginSettings[K] | IPluginSettings {
-        return key != null ? this.settings[key] : this.settings;
+    get<K extends keyof IPluginSettings>(key: K[]): Pick<IPluginSettings, K>;
+    get<K extends keyof IPluginSettings>(key?: K | K[]) {
+        if (key === undefined) return this.settings;
+        if (Array.isArray(key)) return pickKeys(this.settings, key);
+        return this.settings[key];
     }
 
     set<K extends keyof IPluginSettings>(key: K, value: IPluginSettings[K]) {

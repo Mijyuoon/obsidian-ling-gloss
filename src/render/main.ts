@@ -10,6 +10,7 @@ import { getLevelMetadata, getStyleClasses, getStyleKind, renderBlock } from "./
 interface IFormatFlags {
     glaSpaces?: boolean;
     useMarkup?: boolean;
+    useFancy?: boolean;
 }
 
 export class GlossRenderer {
@@ -92,7 +93,11 @@ export class GlossRenderer {
                         cls: styles[styleKey],
                         text: level,
                         always: true,
-                        format: (text) => this.formatText(text, { useMarkup, glaSpaces }),
+                        format: (text) => this.formatText(text, {
+                            glaSpaces,
+                            useMarkup,
+                            useFancy: true,
+                        }),
                     });
                 }
             }
@@ -132,6 +137,25 @@ export class GlossRenderer {
         if (format.glaSpaces) {
             // Replace underscores with whitespace
             text = text.replace(/[_]+/, " ");
+        }
+
+        if (format.useFancy) {
+            const {
+                cliticMarks,
+                infixBrackets,
+                nullElement,
+            } = this.settings.get("fancyRender");
+
+            // Replace regular ASCII symbols with fancy ones
+            text = text.replace(/[=<>]|![0]/g, text => {
+                switch (true) {
+                    case cliticMarks && text === "=": return "\uA78A";
+                    case infixBrackets && text === "<": return "\u27E8";
+                    case infixBrackets && text === ">": return "\u27E9";
+                    case nullElement && text === "!0": return "\u2205";
+                    default: return text;
+                }
+            });
         }
 
         if (format.useMarkup) {

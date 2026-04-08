@@ -63,6 +63,18 @@ export const deepCopy = <T extends any>(source: T, arrays = true): T => {
     return source;
 }
 
+export const pickKeys = <T extends TObject, K extends keyof T>(source: T, keys: K[]): Pick<T, K> => {
+    const result = {} as Pick<T, K>;
+
+    for (const key of keys) {
+        if (key in source) {
+            result[key] = source[key];
+        }
+    }
+
+    return result;
+}
+
 
 export function* range(limit: number, start = 0): Generator<number> {
     for (let index = start; index < limit; index += 1) yield index;

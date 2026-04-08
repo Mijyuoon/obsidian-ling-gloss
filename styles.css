@@ -5,6 +5,16 @@
     max-width: 250px;
 }
 
+.setting-item-info mark,
+.setting-item-info code {
+    color: var(--color-orange);
+    background-color: unset;
+}
+
+.setting-item-info span[title] {
+    text-decoration: underline dotted;
+}
+
 /* Error message appearance */
 
 .ling-gloss-error {

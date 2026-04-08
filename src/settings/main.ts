@@ -17,12 +17,18 @@ export class PluginSettingsTab extends PluginSettingTab {
         this.containerEl.empty();
 
         this.addAlignModeSettings();
+        this.addFancyRenderSettings();
         this.addSwitchSettings();
         this.addStyleSettings();
     }
 
     private addAlignModeSettings() {
-        const { alignMode, alignCenter, alignLevel, alignCustom } = this.settings.get();
+        const {
+            alignMode,
+            alignCenter,
+            alignLevel,
+            alignCustom,
+        } = this.settings.get();
 
         new Setting(this.containerEl)
             .setName("Align gloss elements")
@@ -30,11 +36,11 @@ export class PluginSettingsTab extends PluginSettingTab {
                 desc.appendText("Horizontal alignment of gloss elements that have certain marker characters on either side.");
                 desc.createEl("br");
                 desc.appendText("The default markers are: ");
-                desc.createEl("code", { text: "-" });
+                desc.createEl("mark", { text: "-" });
                 desc.appendText(" (hyphen), ");
-                desc.createEl("code", { text: "=" });
+                desc.createEl("mark", { text: "=" });
                 desc.appendText(" (equals sign), ");
-                desc.createEl("code", { text: "~" });
+                desc.createEl("mark", { text: "~" });
                 desc.appendText(" (tilde).");
             }))
             .addDropdown(component => {
@@ -99,6 +105,87 @@ export class PluginSettingsTab extends PluginSettingTab {
                         });
                     });
             });
+    }
+
+    private addFancyRenderSettings() {
+        const {
+            cliticMarks,
+            infixBrackets,
+            nullElement,
+        } = this.settings.get("fancyRender");
+
+        new Setting(this.containerEl)
+            .setName("Replace clitic marks")
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Replace regular ");
+                desc.createEl("mark", { text: "=" });
+                desc.appendText(" (equals sign) clitic marks with ");
+                desc.createEl("mark", { text: "\uA78A" });
+                desc.appendText(" (");
+                desc.createEl("span", { text: "U+A78A", title: "MODIFIER LETTER SHORT EQUALS SIGN" });
+                desc.appendText(") in rendered gloss elements. ");
+                desc.createEl("br");
+                desc.appendText("This matches the width of the hyphen more closely in some fonts like Charis SIL.");
+            }))
+            .addToggle(component => {
+                component
+                    .setValue(cliticMarks)
+                    .onChange(async value => {
+                        await this.settings.update({
+                            fancyRender: {
+                                cliticMarks: value,
+                            }
+                        });
+                    });
+            })
+
+        new Setting(this.containerEl)
+            .setName("Replace infix brackets")
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Replace regular ");
+                desc.createEl("mark", { text: "< >" });
+                desc.appendText(" (less/greater than) infix brackets with ");
+                desc.createEl("mark", { text: "\u27E8 \u27E9" });
+                desc.appendText(" (");
+                desc.createEl("span", { text: "U+27E8", title: "MATHEMATICAL LEFT ANGLE BRACKET" });
+                desc.appendText("/");
+                desc.createEl("span", { text: "U+27E9", title: "MATHEMATICAL RIGHT ANGLE BRACKET" });
+                desc.appendText(") in rendered gloss elements.");
+            }))
+            .addToggle(component => {
+                component
+                    .setValue(infixBrackets)
+                    .onChange(async value => {
+                        await this.settings.update({
+                            fancyRender: {
+                                infixBrackets: value,
+                            }
+                        });
+                    });
+            })
+
+        new Setting(this.containerEl)
+            .setName("Use null element shortcut")
+            .setDesc(makeDesc(desc => {
+                desc.appendText("Replace the string ");
+                desc.createEl("mark", { text: "!0" });
+                desc.appendText(" (null element) with ");
+                desc.createEl("mark", { text: "\u2205" });
+                desc.appendText(" (");
+                desc.createEl("span", { text: "U+2205", title: "EMPTY SET" });
+                desc.appendText(") in rendered gloss elements. ");
+            }))
+            .addToggle(component => {
+                component
+                    .setValue(nullElement)
+                    .onChange(async value => {
+                        await this.settings.update({
+                            fancyRender: {
+                                nullElement: value,
+                            }
+                        });
+                    });
+            })
     }
 
     private addSwitchSettings() {
