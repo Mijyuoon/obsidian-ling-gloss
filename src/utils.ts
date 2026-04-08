@@ -81,6 +81,35 @@ export const arrayFill = <T>(array: T[], limit: number, func: (index: number) =>
     return array;
 }
 
+export const arrayIndex = <T>(array: T[], start: number, func: (elem: T) => boolean): number | null => {
+    let index = start >= 0 ? start : Math.max(array.length + start, 0) ;
+
+    while (index < array.length) {
+        if (func(array[index])) return index;
+
+        index += 1;
+    }
+
+    return null;
+}
+
+export const arraySplit = <T>(array: T[], func: (elem: T) => boolean): T[][] => {
+    const result: T[][] = [];
+    let lastIndex = -1;
+
+    do {
+        const index = arrayIndex(array, lastIndex + 1, func) ?? array.length;
+
+        result.push(array.slice(lastIndex + 1, index));
+        lastIndex = index;
+    } while (lastIndex < array.length);
+
+    return result;
+}
+
 
 export const sanitizeCssClasses = (classes: string[]): string[] =>
     classes.filter(cls => cls.length > 0).map(cls => cls.replace(/[^a-z0-9_-]+/ig, "-"));
+
+export const formatWhitespace = (text: string, nbsp = false) =>
+    text.trim().replace(/\s+/g, nbsp ? "\u00A0" : " ");

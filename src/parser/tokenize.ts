@@ -29,12 +29,22 @@ function* iterateLines(input: string): Generator<ILine> {
     }
 }
 
-function tokenizeLine(lineNo: number, line: string): IToken[] {
+const pushRawToken = (buffer: string[], tokens: IToken[], quoted: boolean) => {
+    if (buffer.length > 0) {
+        const type = quoted ? "quoted" : "simple";
+        const value = buffer.join("");
+
+        buffer.length = 0;
+        tokens.push({ type, value });
+    }
+}
+
+const tokenizeLine = (lineNo: number, line: string): IToken[] => {
     let isEscape = false;
     let isQuoted = false;
 
-    const buffer = <string[]>[];
-    const tokens = <IToken[]>[];
+    const buffer: string[] = [];
+    const tokens: IToken[] = [];
 
     for (const char of line) {
         if (isEscape) {
@@ -43,7 +53,6 @@ function tokenizeLine(lineNo: number, line: string): IToken[] {
             switch (char) {
                 case '[':
                 case ']':
-                case '^':
                     buffer.push(char);
                     break;
 
@@ -63,12 +72,7 @@ function tokenizeLine(lineNo: number, line: string): IToken[] {
                     break;
 
                 case ']':
-                    tokens.push({
-                        type: "quoted",
-                        value: buffer.join(""),
-                    });
-
-                    buffer.length = 0;
+                    pushRawToken(buffer, tokens, true);
                     isQuoted = false;
                     break;
 
@@ -91,14 +95,7 @@ function tokenizeLine(lineNo: number, line: string): IToken[] {
                 case '\v':
                 case '\f':
                 case '\u00A0':
-                    if (buffer.length > 0) {
-                        tokens.push({
-                            type: "simple",
-                            value: buffer.join(""),
-                        });
-                    }
-
-                    buffer.length = 0;
+                    pushRawToken(buffer, tokens, false);
                     isQuoted = (char === '[');
                     break;
 
@@ -113,17 +110,11 @@ function tokenizeLine(lineNo: number, line: string): IToken[] {
         throw `found a “[” without a matching “]” (line ${lineNo})`;
     }
 
-    if (buffer.length > 0) {
-        tokens.push({
-            type: "simple",
-            value: buffer.join(""),
-        });
-    }
-
+    pushRawToken(buffer, tokens, false);
     return tokens;
 }
 
-function tryGetCommand(lineNo: number, token?: IToken): ICommand | null {
+const tryGetCommand = (lineNo: number, token?: IToken): ICommand | null => {
     if (token?.type !== "simple") return null;
     if (!token.value.startsWith('\\')) return null;
 
@@ -135,10 +126,10 @@ function tryGetCommand(lineNo: number, token?: IToken): ICommand | null {
 
 
 export const tokenize = (input: string): Result<ICommand[]> => {
-    const commands = <ICommand[]>[];
+    const commands: ICommand[] = [];
     let errors: string[] | null = null;
 
-    for (const {lineNo, line, indent} of iterateLines(input)) {
+    for (const { lineNo, line, indent } of iterateLines(input)) {
         try {
             const tokens = tokenizeLine(lineNo, line);
 

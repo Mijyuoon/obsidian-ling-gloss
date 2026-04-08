@@ -29,6 +29,7 @@
 
 .ling-gloss-number {
     padding-inline-end: 1em;
+    white-space: nowrap;
 }
 
 .ling-gloss-body {
@@ -43,6 +44,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1em 1em;
+}
+
+.ling-gloss-element {
+    white-space: nowrap;
 }
 
 .ling-gloss-postamble {

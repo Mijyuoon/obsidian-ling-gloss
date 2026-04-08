@@ -4,12 +4,14 @@ import { GlossParser } from "src/parser/main";
 import { GlossRenderer } from "src/render/main";
 import { PluginSettingsTab } from "src/settings/main";
 import { PluginSettingsWrapper } from "src/settings/wrapper";
+import { MarkupRenderer } from "./markup/main";
 
 
 export default class LingGlossPlugin extends Plugin {
     settings = new PluginSettingsWrapper(this);
+    markup = new MarkupRenderer(this.settings);
     parser = new GlossParser(this.settings);
-    renderer = new GlossRenderer(this.settings);
+    renderer = new GlossRenderer(this.settings, this.markup);
 
     async onload() {
         await this.settings.load();

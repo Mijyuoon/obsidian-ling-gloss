@@ -1,18 +1,19 @@
 import { IGlossData } from "src/data/gloss";
 import { getDefaultAlignMarkers } from "src/data/settings";
+import { MarkupRenderer } from "src/markup/main";
 import { PluginSettingsWrapper } from "src/settings/wrapper";
+import { formatWhitespace } from "src/utils";
 
-import { formatWhitespace, getLevelMetadata, getStyleClasses, getStyleKind, renderBlock } from "./helpers";
+import { getLevelMetadata, getStyleClasses, getStyleKind, renderBlock } from "./helpers";
 
 
 interface IFormatFlags {
-    useNbsp?: boolean;
     glaSpaces?: boolean;
     useMarkup?: boolean;
 }
 
 export class GlossRenderer {
-    constructor(private settings: PluginSettingsWrapper) { }
+    constructor(private settings: PluginSettingsWrapper, private markup: MarkupRenderer) { }
 
     renderErrors(target: HTMLElement, errors: string[]) {
         target.empty();
@@ -38,7 +39,6 @@ export class GlossRenderer {
             kind: "number",
             text: data.number.value,
             always: true,
-            format: (text) => formatWhitespace(text, true),
         });
 
         const gloss = container.createDiv({
@@ -84,19 +84,15 @@ export class GlossRenderer {
                 for (const [levelNo, level] of levels.entries()) {
                     const [levelKind, styleKey] = getLevelMetadata(levelNo);
 
-                    // Alternative whitespace syntax only for level-A elements
-                    const glaSpaces = altSpaces && levelNo === 0;
+                    // Alternative whitespace syntax only for level-A elements in N-level glosses
+                    const glaSpaces = altSpaces && data.nlevel && levelNo === 0;
 
                     renderBlock(element, {
                         kind: levelKind,
                         cls: styles[styleKey],
                         text: level,
                         always: true,
-                        format: (text) => this.formatText(text, {
-                            useMarkup,
-                            glaSpaces,
-                            useNbsp: true,
-                        }),
+                        format: (text) => this.formatText(text, { useMarkup, glaSpaces }),
                     });
                 }
             }
@@ -138,11 +134,10 @@ export class GlossRenderer {
             text = text.replace(/[_]+/, " ");
         }
 
-        // TODO: Implement markup rendering
         if (format.useMarkup) {
-            throw "not implemented yet";
+            return this.markup.render(text);
         }
 
-        return formatWhitespace(text, format.useNbsp);
+        return formatWhitespace(text);
     }
 }
