@@ -498,6 +498,14 @@ An example gloss using the above options is shown below:
 
 ![Example 28](_examples/example28.png)
 
+## Fancy Symbol Replacement
+
+Since the version 2.2 there is an option to automatically replace some ASCII symbols in gloss elements with their more appropriate unicode equivalents. This replacement occurs only in rendered glosses and does not affect the source text. Currently supported symbols include the clitic boundary marker (equals sign), infix brackets (less/greater than symbols), as well as a shortcut string "!0" for the null element symbol.
+
+To enable these replacements, go to the plugin settings (*Settings → Interlinear Glossing*) menu.
+
+![Example 29](_examples/example29.png)
+
 # Installation
 
 ## Obsidian plugin repository
